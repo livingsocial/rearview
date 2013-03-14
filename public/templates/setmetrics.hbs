@@ -1,0 +1,51 @@
+<div class='modal-body'>
+    <h2>Set Metrics</h2>
+    <div class='expressions-metrics hero-unit'>
+        <form id='metricsExpressionsForm' class='clearfix'>
+            <fieldset class='metrics'>
+                <label>Enter Metrics: <i>( fullscreen mode: ctrl + f )</i></label>
+                <textarea id='inputMetrics' name='inputMetrics' rows='3' placeholder=''></textarea>
+            </fieldset>
+            <fieldset class='expressions'>
+                <label>Enter Expressions: <i>( fullscreen mode: ctrl + f )</i></label>
+                <textarea id='inputExpressions' name='inputExpressions' rows='3' placeholder=''></textarea>
+            </fieldset>
+            <fieldset class='minutes-back bottom'>
+                <label>Minutes Back</label>
+                <input type='text' id='minutesBack' name='minutesBack' class='input-minutes-back' value='1'>
+            </fieldset>
+            <fieldset class='from bottom'>    
+                <label>From:</label>
+                <input type='text' value='now' id='fromDatePicker' name='fromDatePicker' class='date-picker'>
+            </fieldset>
+            <fieldset class='test-in-graph bottom'>
+                <label>&nbsp;</label>
+                <button type='button' class='testGraph btn btn-success'>
+                    Test Monitor
+                </button>
+            </fieldset>
+        </form>
+    </div>
+    <div class='test-graph hero-unit'>
+        <form>
+            <label>Graph:</label>
+            <div class='graph'>
+                {{content.charts}}
+            </div>
+            <fieldset class="output">
+                <label>Output:</label>
+                <textarea id="outputView"></textarea>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<div class='modal-footer'>
+    <button type='button' class='nameSchedule btn btn-primary pull-left'>
+        <i class='icon-white icon-chevron-left'></i>
+        Name &amp; Schedule
+    </button>
+    <button type='button' class='saveFinish btn btn-primary'>
+        Save &amp; Finish
+        <i class='icon-white icon-chevron-right'></i>
+    </button>
+</div>

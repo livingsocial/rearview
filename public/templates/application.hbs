@@ -1,0 +1,21 @@
+{{#application}}
+<div class='application{{this.id}} application-tile'>
+    <figure class='front'>
+        <p>{{this.name}}</p>
+        <fieldset>
+            <div class='btn-wrap'>
+                <button class='settings btn btn-large btn-inverse'><i class='icon-cog icon-white'></i></button>
+            </div>
+        </fieldset>
+    </figure>
+    <figure class='back'>
+        <fieldset>
+            <input id='applicationName{{this.id}}' name='applicationName{{this.id}}' class='application-name' type='text' value='{{this.name}}'>
+            <div class='btn-wrap'>
+                <button class='cancel btn btn-large btn-inverse'><i class='icon-remove icon-white'></i></button>
+                <button class='save btn btn-large btn-primary'><i class='icon-ok icon-white'></i></button>
+            </div>
+        </fieldset>
+    </figure>
+</div>
+{{/application}}

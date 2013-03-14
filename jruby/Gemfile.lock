@@ -1,0 +1,12 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    json (1.5.0-java)
+    json-jruby (1.5.0-java)
+      json (= 1.5.0)
+
+PLATFORMS
+  java
+
+DEPENDENCIES
+  json-jruby

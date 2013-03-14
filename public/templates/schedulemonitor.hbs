@@ -1,0 +1,84 @@
+<div class='modal-body'>
+    <h2>Name &amp; Schedule</h2>
+    <div class='hero-unit'>
+        <form id='namePagerForm' class='clearfix'>
+            <fieldset class='monitor-name control-group'>
+                <label for='monitorName' class='control-label'>Monitor Name:</label>
+                    <input type='text' id='monitorName' name='monitorName' required='required' />
+            </fieldset>
+            <fieldset class='description control-group'>
+                <label for='description' class='control-label'>Monitor Description (Not Required):</label>
+                <textarea rows='3' id='description' name='description'></textarea>
+            </fieldset>
+            <fieldset class='pager-duty control-group'>
+                <label for='pagerDuty' class='control-label'>Add PagerDuty Keys or Email Addresses (Not Required):</label>
+                <textarea rows='3' id='pagerDuty' name='pagerDuty' placeholder='Multiple keys and/or email addresses can be entered (separated by a space, comma or new line).'></textarea>
+            </fieldset>
+        </form>
+    </div>
+    <div class='hero-unit'>
+        <form class='clearfix'>
+            <fieldset class='set-schedule'>
+                <label>Set Schedule:</label>
+            </fieldset>
+            <fieldset class='form-horizontal'>
+                <div class='control-group'>
+                    <label class='control-label' for='inputSeconds'>Seconds</label>
+                    <div class='controls'>
+                        <input type='text' id='inputSeconds' name='inputSeconds' value='0' class='input-mini' placeholder='12'>
+                    </div>
+                </div>
+                <div class='control-group'>
+                    <label class='control-label' for='inputMinutes'>Minutes</label>
+                    <div class='controls'>
+                        <input type='text' id='inputMinutes' name='inputMinutes' value='*' class='input-mini'>
+                    </div>
+                </div>
+                <div class='control-group'>
+                    <label class='control-label' for='inputHours'>Hours</label>
+                    <div class='controls'>
+                        <input type='text' id='inputHours' name='inputHours' value='*' class='input-mini'>
+                    </div>
+                </div>
+                <div class='control-group'>
+                    <label class='control-label' for='inputDays'>Days</label>
+                    <div class='controls'>
+                        <input type='text' id='inputDays' name='inputDays' value='*' class='input-mini'>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class='day-month-picker'>
+                <label>Weekday</label>
+                <div class='day-picker btn-group' data-toggle='buttons-checkbox'>
+                    <button type='button' class='sun btn' data-value='Sun'>Sun</button>
+                    <button type='button' class='mon btn' data-value='Mon'>Mon</button>
+                    <button type='button' class='tue btn' data-value='Tue'>Tue</button>
+                    <button type='button' class='wed btn' data-value='Wed'>Wed</button>
+                    <button type='button' class='thu btn' data-value='Thu'>Thu</button>
+                    <button type='button' class='fri btn' data-value='Fri'>Fri</button>
+                    <button type='button' class='sat btn' data-value='Sat'>Sat</button>
+                </div>
+                <label>Month</label>
+                <div class='month-picker btn-group' data-toggle='buttons-checkbox'>
+                    <button type='button' class='jan btn' data-value='Jan'>Jan</button>
+                    <button type='button' class='feb btn' data-value='Feb'>Feb</button>
+                    <button type='button' class='mar btn' data-value='Mar'>Mar</button>
+                    <button type='button' class='apr btn' data-value='Apr'>Apr</button>
+                    <button type='button' class='may btn' data-value='May'>May</button>
+                    <button type='button' class='jun btn' data-value='Jun'>Jun</button>
+                    <button type='button' class='jul btn' data-value='Jul'>Jul</button>
+                    <button type='button' class='aug btn' data-value='Aug'>Aug</button>
+                    <button type='button' class='sep btn' data-value='Sep'>Sep</button>
+                    <button type='button' class='oct btn' data-value='Oct'>Oct</button>
+                    <button type='button' class='nov btn' data-value='Nov'>Nov</button>
+                    <button type='button' class='dec btn' data-value='Dec'>Dec</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+<div class='modal-footer'>
+    <button class='setMetrics btn btn-primary'>Set Metrics
+        <i class='icon-white icon-chevron-right'></i>
+    </button>
+</div>
