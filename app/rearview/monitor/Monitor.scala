@@ -48,7 +48,6 @@ object Monitor {
         Logger.error("Monitor failure " + e.getMessage)
         handleError(e)
     }
-
   }
 
 
@@ -176,7 +175,7 @@ object Monitor {
     val (status, msg) = e match {
       case e: GraphiteMetricException => (GraphiteMetricErrorStatus, Some(e.toString))
       case e: GraphiteException       => (GraphiteErrorStatus, Some(e.toString))
-      case _                          => (ErrorStatus, None)
+      case _                          => (ErrorStatus, Some(e.toString))
     }
 
     val output = MonitorOutput(status, e.toString)

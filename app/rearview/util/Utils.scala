@@ -19,4 +19,11 @@ object Utils {
     s"http://${Global.externalHostname}/#dash/${job.appId}/expand/${job.id.get}"
   }
 
+  /**
+   * Exit with given error code and message
+   */
+  def exitMsg(msg: String, code: Int = -1): Nothing = {
+    sys.error(msg)
+    sys.exit(code)
+  }
 }

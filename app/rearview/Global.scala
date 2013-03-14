@@ -22,6 +22,7 @@ import rearview.dao.JobDAO
 import rearview.filter.LoggingFilter
 import rearview.job.SchedulerImpl
 import rearview.alert.Alert
+import rearview.util.Utils.exitMsg
 
 object Global extends WithFilters(LoggingFilter) {
 
@@ -31,19 +32,19 @@ object Global extends WithFilters(LoggingFilter) {
   lazy val alertClassNames      = config.getStringList("alert.class_names").map(_.toList).getOrElse(Nil)
   lazy val clusterInterfaces    = config.getString("cluster.interfaces").getOrElse("").split(',').map(_.trim).filterNot(_.isEmpty)
   lazy val clusterGroupName     = config.getString("cluster.groupName").getOrElse("rearview")
-  lazy val emailFrom            = config.getString("email.from").getOrElse(sys.error("email.from must be defined in configuration"))
-  lazy val emailHost            = config.getString("email.host").getOrElse(sys.error("email.host must be defined in configuration"))
-  lazy val emailPort            = config.getInt("email.port").getOrElse(sys.error("email.port must be defined in configuration"))
+  lazy val emailFrom            = config.getString("email.from").getOrElse(exitMsg("email.from must be defined in configuration"))
+  lazy val emailHost            = config.getString("email.host").getOrElse(exitMsg("email.host must be defined in configuration"))
+  lazy val emailPort            = config.getInt("email.port").getOrElse(exitMsg("email.port must be defined in configuration"))
   lazy val emailUser            = config.getString("email.user")
   lazy val emailPassword        = config.getString("email.password")
-  lazy val externalHostname     = config.getString("service.hostname").getOrElse(sys.error("service.hostname must be defined in configuration"))
-  lazy val graphiteAuth         = config.getString("graphite.auth").getOrElse(sys.error("graphite.auth must be defined in configuration"))
-  lazy val graphiteHost         = config.getString("graphite.host").getOrElse(sys.error("graphite.host must be defined in configuration"))
+  lazy val externalHostname     = config.getString("service.hostname").getOrElse(exitMsg("service.hostname must be defined in configuration"))
+  lazy val graphiteAuth         = config.getString("graphite.auth").getOrElse(exitMsg("graphite.auth must be defined in configuration"))
+  lazy val graphiteHost         = config.getString("graphite.host").getOrElse(exitMsg("graphite.host must be defined in configuration"))
   lazy val graphiteTimeout      = config.getInt("graphite.timeout").getOrElse(10000)
   lazy val jrubyCacheIterations = config.getInt("jruby.cache_iterations").getOrElse(100)
-  lazy val pagerDutyUri         = config.getString("pagerduty.uri").getOrElse(sys.error("pagerduty.uri must be defined in configuration"))
+  lazy val pagerDutyUri         = config.getString("pagerduty.uri").getOrElse(exitMsg("pagerduty.uri must be defined in configuration"))
   lazy val sandboxTimeout       = config.getInt("sandbox.timeout").getOrElse(5)
-  lazy val slickDriverName      = config.getString("slick.db.driver").getOrElse(sys.error("slick.db.driver must be defined in configuration"))
+  lazy val slickDriverName      = config.getString("slick.db.driver").getOrElse(exitMsg("slick.db.driver must be defined in configuration"))
   lazy val uiVersion            = config.getString("ui.version").getOrElse(s"dev-${System.currentTimeMillis}")
 
   lazy val scheduler = SchedulerImpl()
