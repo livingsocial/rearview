@@ -45,5 +45,5 @@ trait MonitorController extends Controller  with Security {
 }
 
 object MonitorController extends MonitorController {
-  val graphiteClient = LiveGraphiteClient
+  lazy val graphiteClient = LiveGraphiteClient
 }
