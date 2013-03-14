@@ -45,7 +45,7 @@ minute. If the conversion rate drops below 10% we want to generate an alert.
 The add or edit monitor UI has several fields, but the most important fields are the metrics, number
 of minutes and the monitor Ruby expression field.
 
-![rearview sample monitor](http://code.livingsocial.net/analytics/rearview/raw/master/public/img/sample-monitor.png)
+![rearview sample monitor](https://github.com/livingsocial/rearview/raw/master/public/img/sample-monitor.png)
 
 In this example, in the metrics field we would specify:
 
