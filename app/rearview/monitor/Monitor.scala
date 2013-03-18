@@ -121,7 +121,7 @@ object Monitor {
         case e: Throwable =>
           Logger.error("Failed to evaluate JRuby", e)
           writer.append(e.getMessage())
-          (ErrorStatus, JsObject(Nil), None)
+          (ErrorStatus, JsObject(Nil), Some(e.getMessage()))
       }
 
       val output = writer.toString
