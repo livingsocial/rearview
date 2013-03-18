@@ -35,13 +35,6 @@ function(
             var self = this;
 
             self.app.ecosystem();
-        },
-
-        monitor : function(aid, mid) {
-            var self = this;
-            aid = parseInt(aid);
-            mid = parseInt(mid);
-            self.app.monitor(aid, mid);
         }
     });
 

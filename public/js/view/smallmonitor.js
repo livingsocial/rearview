@@ -218,6 +218,7 @@ define([
             var self = this;
 
             Backbone.Mediator.pub('view:smallmonitor:edit', {
+                id         : self.model.get('id'),
                 model      : self.model,
                 graphData  : self.formattedGraphData,  // passing this so we don't have to make another call to monitor route
                 errorState : self.errorState

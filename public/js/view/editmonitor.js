@@ -55,12 +55,12 @@ define([
         render : function(data) {
             var self = this;
 
+            self.monitorId = data.id;
             self.model = data.model;
 
             // make sure update has a reference to the instance and model
             // at the time of editing/updating
             _.bind(self.updateMonitor, self, data.model);
-
             self.initMonitor(data);
         },
         /**
@@ -70,60 +70,118 @@ define([
          *
          **/
         initMonitor : function(data) {
-            var self       = this,
-                model      = data.model,
-                graphData  = data.graphData,
-                errorState = data.errorState;
+            var self = this;
 
-            self._initErrorsList(function(errors) {
+            // retrieve monitor model & graph data
+            self.getMonitor(self.monitorId, function(result) {
+                self.getGraphData(self.monitorId, function(result) {
 
-                self.templar.render({
-                    path : 'expandedmonitor',
-                    el   : self.$el,
-                    data : {
-                        'monitor' : model.toJSON(),
-                        'errors'  : errors,
-                        'alerts'  : errors,
-                        'output'  : model.get('output')
-                    }
+                    self._initErrorsList(function(errors) {
+                        self.templar.render({
+                            path : 'expandedmonitor',
+                            el   : self.$el,
+                            data : {
+                                'monitor' : self.model.toJSON(),
+                                'errors'  : errors,
+                                'alerts'  : errors,
+                                'output'  : self.model.get('output')
+                            }
+                        });
+
+                        self.$monitor = self.$el.find('.expanded-monitor');
+                        //edit-monitor-wrap container element
+                        self.$el.html( self.$monitor );
+                        // add events to the view buttons in the alert window
+                        self._setAlertsHistory();
+                        // setup the graph area
+                        self.chart = self.initGraph( self.$monitor.find('.graph')[0]);
+                        // set error state
+                        self._setErrorState();
+
+                        self.updateGraph(self.model, function(output) {
+                            self._initializeCodeMirror();
+                            self._initializeDatePicker('.input-from-date');
+                            self._setErrorDropDown();
+                            self._setScheduleData();
+                            self._setEditNameField();
+                            self.$el.find('.save-changes').click({'model' : self.model}, self.updateMonitor);
+                            self.$el.find('.cancel-changes').click(function() {
+                                self.exit();
+                            });
+                            self.$el.find('.test-in-graph button').click({
+                                'model'  : new JobModel(),
+                                'output' : output
+                            }, self.testMonitor, self);
+
+                            // finally open up the edit monitor widget
+                            self.open();
+                        }, self.formattedGraphData);
+
+                        // dynamically set the heights to maximum screen utilization
+                        self._setExpandedViewHeight();
+                    }, self.model);
+
                 });
+            });
 
-                self.$monitor = self.$el.find('.expanded-monitor');
+        },
 
-                //edit-monitor-wrap container element
-                self.$el.html( self.$monitor );
+        getGraphData : function(monitorId, cb) {
+            var self = this;
+            $.ajax({
+                url   : '/jobs/' + monitorId + '/data',
+                success : function(result) {
+                    if ( result.graph_data ) {
+                        self.formattedGraphData = self.formatGraphData( result.graph_data );
+                        if ( !_.isUndefined(cb) ) {
+                            cb(result);
+                        }
+                    }
+                },
+                error : function(result) {
+                    if ( !_.isUndefined(cb) ) {
+                        cb(result);
+                    }
+                }
+            });
+        },
 
-                // add events to the view buttons in the alert window
-                self._setAlertsHistory();
+        getMonitor : function(monitorId, cb) {
+            var self = this;
 
-                // setup the graph area
-                self.chart = self.initGraph( self.$monitor.find('.graph')[0] );
+            self.model = new JobModel({
+                id : monitorId
+            });
 
-                // set error state
-                self._setErrorState(errorState, self.$monitor);
+            self.model.fetch({
+                success : function(result) {
+                    if ( !_.isUndefined(cb) ) {
+                        cb(result);
+                    }
+                }
+            });
+        },
 
-                self.updateGraph(model, function(output) {
-                    self._initializeCodeMirror();
-                    self._initializeDatePicker(model, '.input-from-date');
-                    self._setErrorDropDown();
-                    self._setScheduleData(model);
-                    self._setEditNameField();
-                    self.$el.find('.save-changes').click({'model' : model}, self.updateMonitor);
-                    self.$el.find('.cancel-changes').click(function() {
-                        self.exit();
-                    });
-                    self.$el.find('.test-in-graph button').click({
-                        'model'  : new JobModel(),
-                        'output' : output
-                    }, self.testMonitor, self);
+        getErrorStatus : function(status) {
+            var self  = this,
+                error = false;
 
-                    // finally open up the edit monitor widget
-                    self.open();
-                }, graphData);
+            switch ( status ) {
+                case 'error' :
+                    error = true;
+                    break;
+                case 'failed' :
+                    error = true;
+                    break;
+                case 'graphite_error' :
+                    error = true;
+                    break;
+                case 'graphite_metric_error' :
+                    error = true;
+                    break;
+            }
 
-                // dynamically set the heights to maximum screen utilization
-                self._setExpandedViewHeight();
-            }, model);
+            return error;
         },
         /**
          * EditMonitorView#edit(model)
@@ -229,7 +287,7 @@ define([
             // update to the output view for testing
             self.$el.find('textarea.output-view').val(output);
             self.$el.find('.output-tab').tab('show');
-            
+
             self.updateGraph(monitor, function() {
                 $testBtn.button('reset');
             });
@@ -247,7 +305,7 @@ define([
 
             monitor.set('toDate', toDate);
 
-            // viewError in graph gets the from 
+            // viewError in graph gets the from
             // toDate field not from the html field
             monitor = self._setMetrics(monitor, true);
             monitor = self._setSchedule(monitor);
@@ -255,7 +313,7 @@ define([
             // otherwise update to the output view for testing
             self.$el.find('textarea.output-view').val(output);
             self.$el.find('.output-tab').tab('show');
-            
+
             self.updateGraph(monitor);
         },
         /**
@@ -392,13 +450,14 @@ define([
                 self.chart.setSize(null, chartHeight);
             }
         },
-        _setErrorState : function(errorState, $monitor) {
-            var self = this;
+        _setErrorState : function() {
+            var self        = this,
+                errorStatus = self.getErrorStatus(self.model.get('status'));
 
-            if( errorState ) {
-                $monitor.addClass('red');
+            if( errorStatus ) {
+                self.$monitor.addClass('red');
             } else {
-                $monitor.removeClass('red');
+                self.$monitor.removeClass('red');
             }
         },
         /** internal
@@ -406,8 +465,9 @@ define([
          *
          *
          **/
-        _initErrorsList : function(cb, model) {
-            var monitorId = model.get('id');
+        _initErrorsList : function(cb) {
+            var self      = this,
+                monitorId = self.model.get('id');
 
             $.get('/jobs/' + monitorId + '/errors', function(data) {
                 data = _.map(data, function(error) {
@@ -493,9 +553,8 @@ define([
          *
          *
          **/
-        _initializeDatePicker : function(model, selector) {
+        _initializeDatePicker : function(selector) {
             var self = this;
-
             self.fromDatePicker = self.$el.find(selector).datetimepicker();
         },
         /** internal
@@ -503,9 +562,9 @@ define([
          *
          *
          **/
-        _setScheduleData : function(model) {
+        _setScheduleData : function() {
             var self     = this,
-                cronExpr = model.get('cronExpr').split(' '); // space delimited cron job expression
+                cronExpr = self.model.get('cronExpr').split(' '); // space delimited cron job expression
 
             self.$el.find('#inputSeconds').val( cronExpr[0] );
             self.$el.find('#inputMinutes').val( cronExpr[1] );
@@ -576,7 +635,7 @@ define([
 
         _setAlertsHistory : function() {
             var self = this;
-            self.$monitor.find('.alerts-history ul').delegate( "li button", "click", function(e) { 
+            self.$monitor.find('.alerts-history ul').delegate( "li button", "click", function(e) {
                 self.viewErrorInGraph({
                     'data' : {
                         'model' : new JobModel(),

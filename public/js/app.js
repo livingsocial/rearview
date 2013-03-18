@@ -38,6 +38,13 @@ define([
     JobCollection,
     ApplicationCollection
 ){
+    /**
+     * Controller
+     *
+     * This is the central location that sets up, modifies data, and decides
+     * the next view state.  It also initializes and authenticates for the entire
+     * application currently.
+     **/
     var Controller = function() {};
 
     _.extend(Controller, {
@@ -55,28 +62,36 @@ define([
             self.header();
             self.secondaryNav();
 
+            // indicate initialized application
+            // and start history object
             Backbone.Mediator.pub('controller:app:init');
             self.controllerInit = true;
-
             Backbone.history.start();
         },
 
+        /* Initialize Driven */
+
         alert : function() {
             var self = this;
-
             self.auth();
-
             self.alertView = new AlertView({
                 'el'      : $('.alert-wrap'),
                 'templar' : self.templar
             });
         },
 
+        header : function() {
+            var self = this;
+            self.auth();
+            new HeaderView({
+                'el'      : $('.header-wrap'),
+                'templar' : self.templar
+            }).render();
+        },
+
         primaryNav : function() {
             var self = this;
-
             self.auth();
-
             new PrimaryNavView({
                 'el'         : $('.primary-nav-wrap'),
                 'collection' : self.applicationCollection,
@@ -87,25 +102,14 @@ define([
 
         secondaryNav : function() {
             var self  = this;
-
             self.auth();
-
             new SecondaryNavView({
                 'el'      : $('.secondary-nav-wrap'),
                 'templar' : self.templar
             }).render();
         },
 
-        header : function() {
-            var self = this;
-
-            self.auth();
-
-            new HeaderView({
-                'el'      : $('.header-wrap'),
-                'templar' : self.templar
-            }).render();
-        },
+        /* Router Driven */
 
         dashboard : function(appId, monitorId) {
             var self   = this,
@@ -133,7 +137,8 @@ define([
                 'nav' : {
                     'dashboard' : true
                 },
-                'monitorId' : monitorId
+                'monitorId' : monitorId,
+                'appId'     : appId
             });
         },
 
@@ -170,6 +175,16 @@ define([
             self.renderViews(views);
         },
 
+        /* Helper Methods */
+
+        /**
+         * Controller#destroyViews()
+         *
+         * Breaks down existing views from the previous route by calling their
+         * destructor methods.  Each view is in charge of it's own memory
+         * management and it is up to a new route to effectively clean up existing
+         * views
+         **/
         destroyViews : function() {
             var self = this;
 
@@ -179,7 +194,13 @@ define([
                 }
             }
         },
-
+        /**
+         * Controller#renderViews(views)
+         * - views (Array): list of view references
+         *
+         * This method handles rendering all views that were initialized in
+         * the current route/controller
+         **/
         renderViews : function(views) {
             var self = this;
 
@@ -191,7 +212,13 @@ define([
                 self.currentView[i].render();
             }
         },
-
+        /**
+         * Controller#auth()
+         *
+         * Handles initial application load by checking that neccesary items
+         * are addressed before anything else liek their is a user, router is
+         * set up, etc.
+         **/
         auth : function() {
             var self = this;
 
@@ -210,10 +237,9 @@ define([
                                        ? new ApplicationCollection()
                                        : self.applicationCollection;
 
-
-                      //new ApplicationCollection();
-
-            // make sure all templates are loaded
+            // using a front end handlebars template manager
+            // which can handle caching in production and template
+            // invalidation through versioning
             self.templar = ( !self.templar )
                          ? new Templar([
                                'addapplication',
