@@ -88,11 +88,11 @@ class SecuritySpec extends Specification with AroundExample with FutureMatchers 
     "prevent JRuby java.io.File" in {
       val monitorExpr = """
         r = java.io.FileReader.new(java.io.File.new "/etc/passwd")
-        r.read
-        false
+        puts r.read
+
       """
       val result = Monitor.evalExpr(artifact, Some(monitorExpr))
-      result.status === ErrorStatus
+      result.status === SecurityErrorStatus
     }
 
     "prevent fork" in {
@@ -149,7 +149,7 @@ class SecuritySpec extends Specification with AroundExample with FutureMatchers 
         false
       """
       Future(Monitor.evalExpr(artifact, Some(monitorExpr))) must whenDelivered { result: AnalysisResult =>
-        result.status === ErrorStatus
+        result.status === SecurityErrorStatus
       }
     }
 

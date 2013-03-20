@@ -52,6 +52,7 @@ case object FailedStatus extends JobStatus("failed")
 case object ErrorStatus extends JobStatus("error")
 case object GraphiteErrorStatus extends JobStatus("graphite_error")
 case object GraphiteMetricErrorStatus extends JobStatus("graphite_metric_error")
+case object SecurityErrorStatus extends JobStatus("security_error")
 
 
 /**

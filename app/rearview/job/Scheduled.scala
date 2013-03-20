@@ -23,6 +23,7 @@ import rearview.model.ModelImplicits.monitorOutputWrites
 import rearview.model.SuccessStatus
 import rearview.monitor.Monitor
 import rearview.Global
+import rearview.model.SecurityErrorStatus
 
 trait Scheduled {
 
@@ -154,6 +155,10 @@ trait Scheduled {
       case GraphiteMetricErrorStatus =>
         Statsd.increment("jobs.graphite_metric_error")
         Statsd.increment(s"job.${jobId}.graphite_metric_error")
+
+      case SecurityErrorStatus =>
+        Statsd.increment("jobs.graphite_security_error")
+        Statsd.increment(s"job.${jobId}.graphite_security_error")
     }
   }
 }

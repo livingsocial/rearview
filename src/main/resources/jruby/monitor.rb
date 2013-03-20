@@ -94,7 +94,7 @@ class Scoped
     @graph_data.merge!(Hash[data])
   end
 
-  def scoped_eval(code, namespace)
+  def scoped_eval(expression, namespace, timeout)
     # Copy instance variables from top-level class into current scope
     namespace.keys.each do |v|
       instance_variable_set "#{v}".to_sym, namespace[v]
@@ -106,7 +106,18 @@ class Scoped
     end
 
     begin
-      instance_eval code
+      instance_eval <<-EOF
+        Timeout::timeout(#{timeout}) {
+          graph_value = lambda { |name, timestamp, value| graph_value(name, timestamp, value) }
+          #{expression}
+          nil
+        }
+      EOF
+    rescue Timeout::Error => e
+      raise java.lang.SecurityException.new(e.to_s)
+    rescue RuntimeError => e
+      puts e.message
+      e.message
     ensure
       generate_default_graph_data if @graph_data.empty?
     end
@@ -144,26 +155,11 @@ class Wrapper
 
   # Binding needs to be relative to the class, NOT top level
   def secure_eval(expression)
-    expr = <<-EOF
-      Timeout::timeout(#{@timeout}) {
-        graph_value = lambda { |name, timestamp, value| graph_value(name, timestamp, value) }
-        begin
-          #{expression}
-          nil
-        rescue java.lang.SecurityException => e
-          raise e
-        rescue RuntimeError => e
-          puts e.message
-          e.message
-        end
-      }
-    EOF
-
     scoped = Scoped.new(@writer)
     @graph_data = scoped.graph_data #lame
     ts = create_timeseries(@namespace.to_hash.delete "@timeseries")
     ns = @namespace.to_hash.merge(ts)
-    scoped.scoped_eval(expr, ns)
+    scoped.scoped_eval(expression, ns, @timeout)
   end
 end
 

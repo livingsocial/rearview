@@ -38,7 +38,7 @@ class JobsControllerSpec extends Specification with JobsController { self =>
   def application = FakeApplication(additionalConfiguration = Map(
     "cluster.interfaces" -> "127.0.0.1",
     "ehcacheplugin"      -> "disabled",
-    "logger.application" -> "ERROR",
+    "logger.application" -> "OFF",
     "db.default.url"     -> "jdbc:mysql://localhost:3306/rearview_test"))
 
   lazy val payload = Source.fromFile("test/monitor.dat").getLines().reduceLeft(_+_)
@@ -103,8 +103,14 @@ class JobsControllerSpec extends Specification with JobsController { self =>
       status(result) === BAD_REQUEST
     }
 
-    "prevent saving monitors which fail to verify" in jobContext { ctx: TestContext =>
+    "allow saving monitors which fail" in jobContext { ctx: TestContext =>
       val job    = JsObject(monitorJob(ctx.app.id.get, ctx.user.id.get).asInstanceOf[JsObject].fields :+ "monitorExpr" -> JsString("""raise "there was an error""""))
+      val result = create()(FakeRequest(POST, "/jobs", FakeHeaders(), job).withSession(("username", ctx.user.email)))
+      status(result) === OK
+    }
+
+    "prevent saving monitors which raise a SecurityException" in jobContext { ctx: TestContext =>
+      val job    = JsObject(monitorJob(ctx.app.id.get, ctx.user.id.get).asInstanceOf[JsObject].fields :+ "monitorExpr" -> JsString("""while true; end"""))
       val result = create()(FakeRequest(POST, "/jobs", FakeHeaders(), job).withSession(("username", ctx.user.email)))
       status(result) === BAD_REQUEST
     }

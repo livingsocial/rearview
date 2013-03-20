@@ -13,8 +13,7 @@ import rearview.dao.UserDAO
 import rearview.graphite.ConfigurableHttpClient
 import rearview.graphite.LiveGraphiteClient
 import rearview.job.Scheduler
-import rearview.model.SuccessStatus
-import rearview.model.Job
+import rearview.model._
 import rearview.model.ModelImplicits._
 import rearview.monitor.Monitor
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -144,8 +143,8 @@ trait JobsController extends Controller with Security {
     import job._
     Monitor(metrics, monitorExpr, minutes, Map(), true) map { r =>
       r match {
-          case result if(result.status == SuccessStatus) => Right(true)
-          case result                                    => Left(result.output.output)
+          case result if(result.status != SecurityErrorStatus) => Right(true)
+          case result                                          => Left(result.output.output)
       }
     } recover {
       case e: Throwable =>

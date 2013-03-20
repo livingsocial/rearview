@@ -27,6 +27,7 @@ import org.jruby.RubyNumeric
 import org.jruby.embed.ScriptingContainer
 import org.jruby.RubyObject
 
+class MonitorException(e: String) extends Exception(e)
 
 object Monitor {
   val minutes = 60
@@ -118,6 +119,11 @@ object Monitor {
           case _           => (SuccessStatus, graphData, None)
         }
       } catch {
+        case e: Exception if((e.getCause.isInstanceOf[SecurityException])) =>
+          Logger.error("SecurityException", e)
+          writer.append(e.getMessage())
+          (SecurityErrorStatus, JsObject(Nil), Some(e.getMessage()))
+
         case e: Throwable =>
           Logger.error("Failed to evaluate JRuby", e)
           writer.append(e.getMessage())
