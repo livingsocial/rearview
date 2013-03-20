@@ -123,9 +123,7 @@ define([
         updateDash : function(data) {
             var self = this;
 	    if (data.status && data.status != 'error') {
-		self.collection = new JobCollection(null, {
-                    appId : self.appId
-                });
+                self.collection.add(data.model);
 
                 // data is sent by pub/sub when actions are required
                 // otherwise we just show/hide on the dashboard
