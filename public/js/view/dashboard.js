@@ -4,6 +4,7 @@ define([
     'backbone',
     'handlebars',
     'model/job',
+    'collection/job',
     'view/base',
     'view/smallmonitor',
     'view/editmonitor',
@@ -21,6 +22,7 @@ define([
     Backbone,
     Handlebars,
     JobModel,
+    JobCollection,
     BaseView,
     SmallMonitorView,
     EditMonitorView,
@@ -121,7 +123,9 @@ define([
         updateDash : function(data) {
             var self = this;
 	    if (data.status && data.status != 'error') {
-                self.collection.add(data.model);
+		self.collection = new JobCollection(null, {
+                    appId : self.appId
+                });
 
                 // data is sent by pub/sub when actions are required
                 // otherwise we just show/hide on the dashboard

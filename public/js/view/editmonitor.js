@@ -336,7 +336,8 @@ define([
                     Backbone.Mediator.pub('view:editmonitor:save', {
                         'model'     : self.model,
                         'message'   : "The monitor '" + model.get('name') + "' was saved.",
-                        'attention' : 'Monitor Saved!'
+                        'attention' : 'Monitor Saved!',
+                        'status'    : 'success'
                     });
 
                     // quit out of the edit monitor view
