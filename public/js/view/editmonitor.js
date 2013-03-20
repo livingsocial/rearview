@@ -330,16 +330,20 @@ define([
 
             monitor = self._setMetrics(monitor);
             monitor = self._setSchedule(monitor);
-
+            
             monitor.save(null, {
-                success : function(model, response, options) {
+                success : function(model, response, options) { 
                     Backbone.Mediator.pub('view:editmonitor:save', {
                         'model'     : self.model,
                         'message'   : "The monitor '" + model.get('name') + "' was saved.",
                         'attention' : 'Monitor Saved!'
                     });
+
+                    // quit out of the edit monitor view
+                    self.exit(monitor);
+                    self.updateGraph(monitor);
                 },
-                error : function(model, xhr, options) {
+                error : function(model, xhr, options) { 
                     Backbone.Mediator.pub('view:editmonitor:save', {
                         'model'     : self.model,
                         'message'   : "The monitor '" + model.get('name') + "' caused an error on saving, please try again.",
@@ -348,13 +352,9 @@ define([
                     });
                 }
             });
-
-            // quit out of the edit monitor view
-            self.exit(monitor);
-            self.updateGraph(monitor);
         },
         /**
-         * EditMonitorView#updateMonitor(e)
+         * EditMonitorView#deleteMonitor(e)
          *
          *
          **/

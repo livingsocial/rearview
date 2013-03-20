@@ -120,11 +120,13 @@ define([
 
         updateDash : function(data) {
             var self = this;
-            self.collection.add(data.model);
+	    if (data.status && data.status != 'error') {
+                self.collection.add(data.model);
 
-            // data is sent by pub/sub when actions are required
-            // otherwise we just show/hide on the dashboard
-            self.reinitializeDash(data);
+                // data is sent by pub/sub when actions are required
+                // otherwise we just show/hide on the dashboard
+                self.reinitializeDash(data);
+            }
         },
 
         reinitializeDash : function(data) {

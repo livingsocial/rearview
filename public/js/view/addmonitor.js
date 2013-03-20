@@ -565,7 +565,8 @@ define([
                     Backbone.Mediator.pub('view:addmonitor:save', {
                         'model'     : model,
                         'message'   : "The monitor '" + model.get('name') + "' was added.",
-                        'attention' : 'Monitor Saved!'
+                        'attention' : 'Monitor Saved!',
+                        'status'    : 'success'
                     });
 
                     self.model = new JobModel();
