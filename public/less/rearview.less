@@ -22,7 +22,7 @@ hr {
     src            : url('@{proxima-bold-base-url}.eot?') format('eot'),
                      url('@{proxima-bold-base-url}.woff') format('woff'),
                      url('@{proxima-bold-base-url}.ttf') format('truetype');
-    font-weight    : normal; 
+    font-weight    : normal;
     text-rendering : optimizelegibility;
 }
 
@@ -235,7 +235,7 @@ hr {
 
         .go-back {
             line-height     : 38px;
-            text-decoration : none; 
+            text-decoration : none;
             cursor          : pointer;
 
             .proxima-regular(18px);
@@ -620,8 +620,8 @@ hr {
 
             .settings {
                 margin   : 0px 5px 0px 0px;
-                display  : inline-block; 
-                float    : right; 
+                display  : inline-block;
+                float    : right;
                 width    : auto;
                 position : absolute;
                 right    : 55px;
@@ -632,7 +632,7 @@ hr {
                 span {
                     display : block;
                     width   : 9999999px;
-                    
+
                     p {
                         margin  : 0;
                         display : inline-block;
@@ -831,7 +831,7 @@ hr {
                 overflow   : auto;
                 max-height : 221px;
             }
-            
+
 
             .button-view {
                 margin        : 10px 0 0 0;
@@ -891,7 +891,7 @@ hr {
         label {
             padding : 5px 7px;
             display : inline-block;
-            cursor  : text; 
+            cursor  : text;
         }
 
         label:hover {
@@ -1056,7 +1056,7 @@ hr {
         }
     }
 
-   
+
 
     .metrics-schedule {
         .expressions textarea {
@@ -1113,6 +1113,43 @@ hr {
                 font-size   : 10px;
             }
         }
+
+        .help.label {
+            float  : right;
+            cursor : pointer;
+        }
+
+        .tooltip {
+            .tooltip-inner {
+                max-width : 500px;
+
+                .proxima-regular(12px);
+
+                table {
+                    margin     : 5px 0;
+                    text-align : left;
+
+                    tr:nth-child(even) {
+                        background : #333
+                    }
+
+                    th {
+                        padding        : 2px;
+                        width          : 280px;
+                        vertical-align : top;
+                        font-weight    : normal;
+                    }
+                    td {
+                        padding        : 2px;
+                        width          : 400px;
+                        vertical-align : top;
+                    }
+                }
+            }
+        }
+        .tooltip.in {
+            opacity : 0.9 !important;
+        }
     }
 
     /* edit monitor styles */
@@ -1138,19 +1175,57 @@ hr {
         .expressions .fullscreen .CodeMirror-scroll {
             height : 100%;
         }
+
+        /* bootstrap styling of label/tooltip for expressions help */
+        .help.label {
+            float  : right;
+            cursor : pointer;
+        }
+
+        .tooltip {
+            .tooltip-inner {
+                max-width : 500px;
+
+                .proxima-regular(12px);
+
+                table {
+                    margin     : 5px 0;
+                    text-align : left;
+
+                    tr:nth-child(even) {
+                        background : #333
+                    }
+
+                    th {
+                        padding        : 2px;
+                        width          : 280px;
+                        vertical-align : top;
+                        font-weight    : normal;
+                    }
+                    td {
+                        padding        : 2px;
+                        width          : 400px;
+                        vertical-align : top;
+                    }
+                }
+            }
+        }
+        .tooltip.in {
+            opacity : 0.9 !important;
+        }
     }
 
     /* application styles */
     .ecosystem-application-wrap {
-        z-index  : 1;       /* extremely important, for some reason 
-                               the monitor wrap is covering application 
+        z-index  : 1;       /* extremely important, for some reason
+                               the monitor wrap is covering application
                                wrap when a transition takes place in chrome */
         position : relative;
         -webkit-perspective : 0px;
            -moz-perspective : 0px;
              -o-perspective : 0px;
                 perspective : 0px;
-    
+
 
         .application-tile {
             margin        : 0 0 20px 20px;
@@ -1159,7 +1234,7 @@ hr {
             height        : 200px;
             cursor        : pointer;
             border-radius : 4px;
-            
+
             -webkit-transition       : -webkit-transform 1s;
                -moz-transition       :    -moz-transform 1s;
                  -o-transition       :      -o-transform 1s;
@@ -1185,7 +1260,7 @@ hr {
             width         : 100%;
             border-radius : 4px;
             position      : absolute;
-            
+
             -webkit-backface-visibility : hidden;
                -moz-backface-visibility : hidden;
                  -o-backface-visibility : hidden;
@@ -1194,16 +1269,16 @@ hr {
 
         .application-tile .front {
             background : #545954;
-      
+
             p {
               line-height    : 40px;
               text-align     : center;
               color          : #fff;
               text-transform : uppercase;
-              
+
               .proxima-regular(18px);
             }
-            
+
             fieldset {
                 margin     : 0;
                 position   : absolute;
@@ -1211,18 +1286,18 @@ hr {
                 width      : 100%;
                 float      : right;
                 opacity    : 0;
-          
+
                 -webkit-transition : opacity 0.3s ease-in-out;
                    -moz-transition : opacity 0.3s ease-in-out;
                         transition : opacity 0.3s ease-in-out;
-                
+
                 .btn-wrap {
                 position : absolute;
                 bottom   : 0;
                 right    : 0;
                 width    : 100%;
               }
-              
+
               button {
                 margin-bottom : 5px;
                 margin-right  : 5px;
@@ -1240,7 +1315,7 @@ hr {
         .application-tile .back {
             background : #f5f4ee;
             .transform(rotateY( 180deg ));
-      
+
             fieldset {
                 margin : 5px;
 
@@ -1296,7 +1371,7 @@ hr {
         }
 
     }
-    
+
     /* bootstrap alert styles */
     .alert-wrap {
         top         : -100px;
@@ -1374,8 +1449,8 @@ hr {
         box-shadow   : 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(185, 74, 74, 0.7);
     }
 
-    input:focus:required:invalid:focus, 
-    textarea:focus:required:invalid:focus, 
+    input:focus:required:invalid:focus,
+    textarea:focus:required:invalid:focus,
     select:focus:required:invalid:focus {
         border-color : #B94A48;
         box-shadow   : 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(185, 74, 74, 0.7);
@@ -1384,7 +1459,7 @@ hr {
         margin : 0;
 
         li {
-            list-style : none; 
+            list-style : none;
             color      : #B94A48;
         }
     }
@@ -1396,18 +1471,18 @@ hr {
     }
 
     /* glyph icon override - for font awesome */
-    .icon-white, 
-    .nav-tabs > .active > a > [class^="icon-"], 
-    .nav-tabs > .active > a > [class*=" icon-"], 
-    .nav-pills > .active > a > [class^="icon-"], 
-    .nav-pills > .active > a > [class*=" icon-"], 
-    .nav-list > .active > a > [class^="icon-"], 
-    .nav-list > .active > a > [class*=" icon-"], 
-    .navbar-inverse .nav > .active > a > [class^="icon-"], 
-    .navbar-inverse .nav > .active > a > [class*=" icon-"], 
-    .dropdown-menu > li > a:hover > [class^="icon-"], 
-    .dropdown-menu > li > a:hover > [class*=" icon-"], 
-    .dropdown-menu > .active > a > [class^="icon-"], 
+    .icon-white,
+    .nav-tabs > .active > a > [class^="icon-"],
+    .nav-tabs > .active > a > [class*=" icon-"],
+    .nav-pills > .active > a > [class^="icon-"],
+    .nav-pills > .active > a > [class*=" icon-"],
+    .nav-list > .active > a > [class^="icon-"],
+    .nav-list > .active > a > [class*=" icon-"],
+    .navbar-inverse .nav > .active > a > [class^="icon-"],
+    .navbar-inverse .nav > .active > a > [class*=" icon-"],
+    .dropdown-menu > li > a:hover > [class^="icon-"],
+    .dropdown-menu > li > a:hover > [class*=" icon-"],
+    .dropdown-menu > .active > a > [class^="icon-"],
     .dropdown-menu > .active > a > [class*=" icon-"] {
         background-image : none;
     }
@@ -1420,7 +1495,7 @@ hr {
     }
 
     /* codemirror styling */
-    .CodeMirror-wrap { 
+    .CodeMirror-wrap {
         border-radius : 3px !important;
 
         pre {
@@ -1434,7 +1509,7 @@ hr {
         }
 
         .CodeMirror-gutter {
-            border-top-left-radius    : 3px; 
+            border-top-left-radius    : 3px;
             border-bottom-left-radius : 3px;
         }
     }
@@ -1453,13 +1528,15 @@ hr {
         opacity  : 1;
     }
 
-    .tooltip {
-        .tooltip-arrow {
-            display : none !important;
-        }
+    .small-monitor {
+        .tooltip {
+            .tooltip-arrow {
+                display : none !important;
+            }
 
-        .tooltip-inner {
-            max-width : none !important;
+            .tooltip-inner {
+                max-width : none !important;
+            }
         }
     }
 
@@ -1474,7 +1551,7 @@ hr {
         }
 
         .ui-timepicker-div dt {
-            font-weight : normal !important; 
+            font-weight : normal !important;
         }
     }
 }

@@ -43,3 +43,6 @@ GET     /currentTime                   rearview.controller.MainController.curren
 # Map static resources from the /public folder to the /assets or /public URL path
 GET     /assets/*file                  controllers.Assets.at(path="/public", file)
 GET     /public/*file                  controllers.Assets.at(path="/public", file)
+
+# Routes for the monitor templates
+GET     /*file                          controllers.Assets.at(path="/public2", file)

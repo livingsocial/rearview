@@ -1,6 +1,6 @@
 import sbt._
 import Keys._
-import play.Project
+import play.Project.{ fork => _, _ }
 import java.lang.reflect._
 
 object ApplicationBuild extends Build with PlayReloader with PlayCommands with PlayPositionMapper {
@@ -65,10 +65,11 @@ object ApplicationBuild extends Build with PlayReloader with PlayCommands with P
     state.copy(remainingCommands = "play-start" +: remainingCommands)
   }
 
-  val main = Project(appName, appVersion, appDependencies).settings(
+  val main = play.Project(appName, appVersion, appDependencies).settings(
     createDevDbTask,
     createTestDbTask,
     parallelExecution in Test := false,
+    playAssetsDirectories <+= baseDirectory / "public2",
     unmanagedResourceDirectories in Compile += new File("src/main/resources"),
     unmanagedSourceDirectories in Compile += new File("src/main/resources"),
     fork in Test := false,

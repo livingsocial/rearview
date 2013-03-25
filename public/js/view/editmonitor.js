@@ -117,6 +117,9 @@ define([
                             self.open();
                         }, self.formattedGraphData);
 
+                        // inline help
+                        self.setHelp();
+
                         // dynamically set the heights to maximum screen utilization
                         self._setExpandedViewHeight();
                     }, self.model);
@@ -182,6 +185,30 @@ define([
             }
 
             return error;
+        },
+        setHelp : function() {
+            var self     = this,
+                $content = '';
+
+            $.ajax({
+                url     : '/help/quick.html',
+                async   : false,
+                success : function( response ) {
+                    $content = response;
+                }
+            });
+
+            var $help = self.$el.find('.help');
+
+            $help.tooltip({
+                trigger   : 'click',
+                html      : true,
+                placement : 'right',
+                delay     : { show : 100, hide : 200 },
+                title     : $content
+            });
+
+            
         },
         /**
          * EditMonitorView#edit(model)

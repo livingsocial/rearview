@@ -34,7 +34,7 @@ define([
             'click .nameSchedule' : 'backToSchedule',
             'click .saveFinish'   : 'saveFinish',
             'click .back'         : 'exitFullScreen',
-            'hidden #addMonitor'  : 'modalClose',
+            'hide #addMonitor'    : 'modalClose',
             'show #addMonitor'    : 'modalShow'
         },
 
@@ -51,6 +51,7 @@ define([
 
             // Add the event listener
             $(window).resize(resize);
+
 
             self.render();
         },
@@ -274,16 +275,24 @@ define([
             self.metricsForm.submit();
         },
 
-        modalClose : function() {
-            var self = this;
+        modalClose : function(e) {
+            // NOTE : hack, figure out backbone events on hidden. 
+            // ie. there are 2 nested bootstrap ui elements and I'm 
+            // trying to bind to one hidden event and to another, 
+            // but ALL hidden events are firing all bound methods.
+            if ( $(e.target).hasClass('add-monitor') ) {
 
-            // reset addMonitorView for when modal closes
-            if (self.metricsViewInitialized) {
-                self.backToSchedule();
-                self.metricsViewInitialized = false;
+                e.stopPropagation();
+                var self = this;
+
+                // reset addMonitorView for when modal closes
+                if (self.metricsViewInitialized) {
+                    self.backToSchedule();
+                    self.metricsViewInitialized = false;
+                }
+
+                Backbone.Mediator.pub('view:addmonitor:close');
             }
-
-            Backbone.Mediator.pub('view:addmonitor:close');
         },
 
         modalShow : function() {
@@ -407,11 +416,11 @@ define([
                     data   : {}
                 });
 
-                self._initializeCodeMirror();
-                self._initializeDatePicker();
-
+                // 
+                self._initCodeMirror();
+                self._initDatePicker();
                 self.initGraph( modalContainerEl.find('.graph')[0] );
-
+                self.setHelp();
                 self.setMetricsValidation();
 
                 // set that metrics view has been initialized to
@@ -427,6 +436,36 @@ define([
 
             self.scheduleView = false;
             self.adjustModalLayout();
+        },
+
+        setHelp : function() {
+            var self     = this,
+                $content = '';
+
+            $.ajax({
+                url     : '/help/quick.html',
+                async   : false,
+                success : function( response ) {
+                    $content = response;
+                }
+            });
+
+            var $help = self.$el.find('.help');
+
+            $help.tooltip({
+                container : '.expressions-metrics',
+                trigger   : 'manual',
+                html      : true,
+                placement : 'right',
+                delay     : { show : 100, hide : 200 },
+                title     : $content
+            }).click(function(e) {
+                e.stopPropagation();
+
+                $(this).tooltip('toggle');
+            });
+
+            
         },
 
         adjustModalLayout : function() {
@@ -460,11 +499,11 @@ define([
         },
 
         /** internal
-         * AddMonitorView#_initializeCodeMirror()
+         * AddMonitorView#_initCodeMirror()
          *
          * Setup code entry areas on the metrics view.
          **/
-        _initializeCodeMirror : function() {
+        _initCodeMirror : function() {
             var self                    = this,
                 $expressions            = self.$el.find('#inputExpressions')[0],
                 expressionsCodeSelector = '.add-monitor .expressions .CodeMirror',
@@ -531,11 +570,11 @@ define([
             self.expressionsMirror.refresh();
         },
         /** internal
-         * AddMonitorView#_initializeDatePicker()
+         * AddMonitorView#_initDatePicker()
          *
          * Set up date picker widget.
          **/
-        _initializeDatePicker : function() {
+        _initDatePicker : function() {
             var self = this;
 
             self.fromDatePicker = $('#fromDatePicker').datetimepicker();
