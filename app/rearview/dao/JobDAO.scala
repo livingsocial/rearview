@@ -32,6 +32,7 @@ object JobDAO {
      case ErrorStatus.name               => ErrorStatus
      case GraphiteErrorStatus.name       => GraphiteErrorStatus
      case GraphiteMetricErrorStatus.name => GraphiteErrorStatus
+     case SecurityErrorStatus.name       => SecurityErrorStatus
    }
    override def sqlTypeName = Some("VARCHAR")
   }

@@ -20,7 +20,7 @@ object ApplicationBuild extends Build with PlayReloader with PlayCommands with P
     "mysql"                         %  "mysql-connector-java"        % "5.1.21",
     "org.apache.commons"            %  "commons-email"               % "1.2",
     "org.apache.commons"            %  "commons-math"                % "2.2",
-    "org.jruby"                     %  "jruby-complete"              % "1.7.3",
+//    "org.jruby"                     %  "jruby-complete"              % "1.7.3", // Using our own custom build to control Timeout threads
     "org.quartz-scheduler"          %  "quartz"                      % "2.1.3",
     "play"                          %% "anorm"                       % "2.1.0",
     "play"                          %% "play-jdbc"                   % "2.1.0"

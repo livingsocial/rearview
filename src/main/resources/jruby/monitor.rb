@@ -3,7 +3,6 @@
 # and monitor functionality.
 #
 
-require 'json'
 require 'timeout'
 require 'utilities'
 

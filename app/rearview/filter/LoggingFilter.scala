@@ -21,12 +21,14 @@ object LoggingFilter extends Filter {
    */
   def apply(next: (RequestHeader) => Result)(rh: RequestHeader): Result = {
     val result = next(rh)
+    val startTime = System.currentTimeMillis
 
     onFinalPlainResult(result) { resultTry =>
       resultTry map { result =>
         if(Global.accessLogging) {
+          val elapsed = System.currentTimeMillis - startTime
           val header  = result.header
-          val logLine = s"${rh.remoteAddress} ${rh.method} ${header.status} ${rh.uri}"
+          val logLine = s"${rh.remoteAddress} ${rh.method} ${header.status} ${elapsed} ${rh.uri}"
           Logger("access").info(logLine)
         }
       }
@@ -40,10 +42,10 @@ object LoggingFilter extends Filter {
    */
   private def onFinalPlainResult(result: Result)(k: Try[PlainResult] => Unit) {
     result match {
-      case plainResult: PlainResult => k(Success(plainResult))
+      case plainResult: PlainResult            => k(Success(plainResult))
       case AsyncResult(future: Future[Result]) => future onComplete {
         case Success(anotherAsyncResult) => onFinalPlainResult(anotherAsyncResult)(k)
-        case Failure(e) => k(Failure(e))
+        case Failure(e)                  => k(Failure(e))
       }
     }
   }

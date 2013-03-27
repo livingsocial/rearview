@@ -25,8 +25,8 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
   lazy val artifact3 = GraphiteParser(Source.fromFile("test/large_set.dat").getLines.reduceLeft(_ + "\n" + _))
 
   def application = FakeApplication(additionalConfiguration = Map(
-      "db.default.url" -> "jdbc:mysql://localhost:3306/rearview_test",
-      "ehcacheplugin" -> "disabled",
+      "db.default.url"     -> "jdbc:mysql://localhost:3306/rearview_test",
+      "ehcacheplugin"      -> "disabled",
       "logger.application" -> "OFF"))
 
   def around[R : AsResult](r: => R) = {

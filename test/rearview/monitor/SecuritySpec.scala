@@ -47,7 +47,7 @@ class SecuritySpec extends Specification with AroundExample with FutureMatchers 
         open '/etc/passwd'
       """
       val result = Monitor.evalExpr(artifact, Some(monitorExpr))
-      result.status === ErrorStatus
+      result.status === SecurityErrorStatus
     }
 
     "prevent delete" in {
