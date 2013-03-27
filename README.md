@@ -194,7 +194,7 @@ Installation
 
 Clone this repo:
 
-    $ git clone git@code.livingsocial.net:analytics/rearview.git
+    $ git clone git://github.com/livingsocial/rearview.git
 
 Create MySQL databases:
 
