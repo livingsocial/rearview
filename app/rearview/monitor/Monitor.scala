@@ -78,7 +78,7 @@ object Monitor {
           case code =>
             val message = new String(r.body)
             Logger.error("Graphite request failure: " + message)
-            Left(new GraphiteMetricException("Invalid Graphite metrics"))
+            Left(new GraphiteMetricException(message))
         }
       } recover {
         case error: Throwable =>
