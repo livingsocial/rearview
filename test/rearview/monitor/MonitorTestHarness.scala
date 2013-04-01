@@ -10,9 +10,9 @@ import play.api.Logger
 object MonitorTestHarness extends App {
 
   def application = FakeApplication(additionalConfiguration = Map(
-    "db.default.url" -> "jdbc:mysql://localhost:3306/rearview_test",
-    "ehcacheplugin" -> "disabled",
-    "logger.application" -> "WARN",
+    "db.default.url"         -> "jdbc:mysql://localhost:3306/rearview_test",
+    "ehcacheplugin"          -> "disabled",
+    "logger.application"     -> "WARN",
     "jruby.cache_iterations" -> 100))
 
   lazy val artifact  = GraphiteParser(Source.fromFile("test/monitor.dat").getLines.reduceLeft(_ + "\n" + _))

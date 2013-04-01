@@ -48,7 +48,7 @@ object JRubyUtils {
   def scriptContainer = {
     val container = new ScriptingContainer(LocalContextScope.CONCURRENT, LocalVariableBehavior.TRANSIENT)
     container.setCompatVersion(CompatVersion.RUBY1_9)
-    container.setCompileMode(CompileMode.JIT)
+    container.setCompileMode(CompileMode.OFF)
     container.setLoadPaths(jrubyLoadPaths :: Nil)
     container
   }

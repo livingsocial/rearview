@@ -148,7 +148,6 @@ object Monitor {
   def initializeRuntime(writer: Writer, data: TimeSeries, preDefNS: Map[String, Any]) = {
     val container = JRubyContainerCache.get
     container.setWriter(writer)
-    container.setErrorWriter(writer)
 
     // Create a new class instance to run expressions within
     val wrapper = instantiateWrapper(container, writer)
