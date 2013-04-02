@@ -10,7 +10,7 @@ class Metric
   attr_reader :timestamp, :value
 
   def initialize(label_fn, timestamp, value)
-    @label_fn = label_fn
+    @label_fn  = label_fn
     @timestamp = timestamp
     @value     = value
   end
@@ -112,11 +112,12 @@ class Scoped
           nil
         }
       EOF
+      { "status" => "success", "graph_data" => @graph_data, "output" => "" }
     rescue Timeout::Error => e
       raise java.lang.SecurityException.new(e.to_s)
     rescue RuntimeError => e
       puts e.message
-      e.message
+      { "status" => "failed", "graph_data" => @graph_data, "output" => e.message }
     ensure
       generate_default_graph_data if @graph_data.empty?
     end
@@ -125,9 +126,10 @@ end
 
 
 class Wrapper
-  def initialize(timeout, writer)
-    @timeout = timeout
-    @writer  = writer
+  def initialize(timeout, writer, namespace)
+    @namespace = namespace
+    @timeout   = timeout
+    @writer    = writer
   end
 
   def create_timeseries(java_ts)
@@ -162,4 +164,4 @@ class Wrapper
   end
 end
 
-Wrapper.new timeout, writer
+Wrapper.new timeout, writer, namespace

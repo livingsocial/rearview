@@ -103,20 +103,25 @@ object Monitor {
     val writer = new StringWriter
 
     try {
+      // Creates script container and local namespace for evaluation
+      val (container, wrapper) = initializeRuntime(writer, data, namespace)
+
       // All variables must be re-set into the JRuby container on each eval
       val result = try {
-        // Creates script container and local namespace for evaluation
-        val (container, wrapper) = initializeRuntime(writer, data, namespace)
-
         // Call JRuby eval on the monitor expression, within the wrapper context
-        val result = container.eval[Object](wrapper, monitorExpr.getOrElse(""))
+        container.eval[Object](wrapper, monitorExpr.getOrElse("")) match {
+          case h: RubyHash =>
+            // Transform the graph data to JSON to be sent to the client
+            val graphData = Option(h.get("graph_data")).map(gd => graphDataToJson(gd, data)).getOrElse(JsObject(Nil))
 
-        // Transform the graph data to JSON to be sent to the client
-        val graphData = graphDataToJson(container.get(wrapper, "@graph_data"), data)
+            Option(h.get("status")).map { s =>
+              s match {
+                case "failed" => (FailedStatus, graphData, Option(h.get("output")).map(_.toString))
+                case _        => (SuccessStatus, graphData, None)
+              }
+            }.getOrElse((FailedStatus, JsObject(Nil), Some("Unexpected result from eval wrapper")))
 
-        result match {
-          case msg: String => (FailedStatus, graphData, Some(msg))
-          case _           => (SuccessStatus, graphData, None)
+          case o => throw new Exception(s"Expected RubyHash, got ${o.getClass}")
         }
       } catch {
         case e: Exception if((e.getCause.isInstanceOf[SecurityException])) =>
@@ -149,24 +154,21 @@ object Monitor {
     val container = JRubyContainerCache.get
     container.setWriter(writer)
 
-    // Create a new class instance to run expressions within
-    val wrapper = instantiateWrapper(container, writer)
-
     // Convert all variable mappings to (String, Any) in prep to build map
     val preDefs = preDefNS.map { kv =>
       ("@" + kv._1) -> kv._2
     }
 
     // Create a RubyHash (using implicit JRuby Java conversion logic
-    val timeseries = createTimeseries(container, wrapper, data)
+    val timeseries = createTimeseries(container, data)
 
     // Build the namespace with all the prepped tuples above
     val namespace =
       "@timeseries" -> timeseries ::
       Nil ++ preDefs
 
-    // Populate the namespace
-    container.put(wrapper, "@namespace", mapAsJavaMap(Map(namespace : _*)))
+    // Create a new class instance to run expressions within
+    val wrapper = instantiateWrapper(container, writer, Map(namespace : _*))
 
     (container, wrapper)
   }
@@ -199,7 +201,7 @@ object Monitor {
   /**
    * Map the TimeSeries object to a an array of TimeSeries objects defined in monitor.rb.
    */
-  def createTimeseries(container: ScriptingContainer, receiver: Object, data: TimeSeries) = {
+  def createTimeseries(container: ScriptingContainer, data: TimeSeries) = {
     seqAsJavaList(data map { series =>
       seqAsJavaList(series map { dp =>
         // null -> Nil in JRuby

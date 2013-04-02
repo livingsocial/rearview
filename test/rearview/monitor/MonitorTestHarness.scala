@@ -13,7 +13,7 @@ object MonitorTestHarness extends App {
     "db.default.url"         -> "jdbc:mysql://localhost:3306/rearview_test",
     "ehcacheplugin"          -> "disabled",
     "logger.application"     -> "WARN",
-    "jruby.cache_iterations" -> 100))
+    "jruby.cache_iterations" -> 50))
 
   lazy val artifact  = GraphiteParser(Source.fromFile("test/monitor.dat").getLines.reduceLeft(_ + "\n" + _))
 

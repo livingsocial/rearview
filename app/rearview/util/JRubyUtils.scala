@@ -27,8 +27,7 @@ import org.jruby.embed.LocalContextScope
 import org.jruby.embed.LocalVariableBehavior
 import org.jruby.embed.PathType
 import org.jruby.embed.ScriptingContainer
-import scala.collection.JavaConversions.asScalaBuffer
-import scala.collection.JavaConversions.seqAsJavaList
+import scala.collection.JavaConversions._
 import scala.concurrent.stm.atomic
 import play.api.Play.current
 import rearview.Global
@@ -56,9 +55,10 @@ object JRubyUtils {
   /**
    * Evaluate the ruby expression with the given namespace inside the sandbox
    */
-  def instantiateWrapper(container: ScriptingContainer, writer: Writer) = {
+  def instantiateWrapper(container: ScriptingContainer, writer: Writer, namespace: Map[String, Any]) = {
     container.put("timeout", sandboxTimeout)
     container.put("writer", writer)
+    container.put("namespace", mapAsJavaMap(namespace))
 
     container.runScriptlet(PathType.CLASSPATH, jrubyScript)
   }
