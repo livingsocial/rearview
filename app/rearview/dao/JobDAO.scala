@@ -9,6 +9,7 @@ import rearview.model._
 import rearview.util.slick.MapperImplicits._
 import scala.slick.direct.AnnotationMapper.column
 import scala.slick.lifted.BaseTypeMapper
+import rearview.model.JobStatus
 
 /**
  * Data access layer for Job objects.
@@ -26,14 +27,8 @@ object JobDAO {
   implicit object JobStatusMapper extends MappedTypeMapper[JobStatus,String] with BaseTypeMapper[JobStatus] {
    def map(s: JobStatus) = s.name
 
-   def comap(s: String) = s match {
-     case SuccessStatus.name             => SuccessStatus
-     case FailedStatus.name              => FailedStatus
-     case ErrorStatus.name               => ErrorStatus
-     case GraphiteErrorStatus.name       => GraphiteErrorStatus
-     case GraphiteMetricErrorStatus.name => GraphiteErrorStatus
-     case SecurityErrorStatus.name       => SecurityErrorStatus
-   }
+   def comap(s: String): JobStatus = JobStatus.unapply(s).getOrElse(sys.error(s"Missing mapping for JobStatus: $s"))
+
    override def sqlTypeName = Some("VARCHAR")
   }
 

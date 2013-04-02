@@ -54,6 +54,18 @@ case object GraphiteErrorStatus extends JobStatus("graphite_error")
 case object GraphiteMetricErrorStatus extends JobStatus("graphite_metric_error")
 case object SecurityErrorStatus extends JobStatus("security_error")
 
+object JobStatus {
+  def unapply(s: String) = s match {
+    case SuccessStatus.name             => Some(SuccessStatus)
+    case FailedStatus.name              => Some(FailedStatus)
+    case ErrorStatus.name               => Some(ErrorStatus)
+    case GraphiteErrorStatus.name       => Some(GraphiteErrorStatus)
+    case GraphiteMetricErrorStatus.name => Some(GraphiteMetricErrorStatus)
+    case SecurityErrorStatus.name       => Some(SecurityErrorStatus)
+    case _                              => None
+  }
+}
+
 
 /**
  * Represents a job's metadata.
@@ -143,17 +155,6 @@ case class DataPoint(metric: String, timestamp: Long, value: Option[Double]) {
 object ModelImplicits {
   type TimeSeries = Seq[Seq[DataPoint]]
 
-  implicit def optStringToJobStatus(status: Option[String]): Option[JobStatus] = {
-    status match {
-      case Some(SuccessStatus.name)             => Some(SuccessStatus)
-      case Some(FailedStatus.name)              => Some(FailedStatus)
-      case Some(ErrorStatus.name)               => Some(ErrorStatus)
-      case Some(GraphiteErrorStatus.name)       => Some(GraphiteErrorStatus)
-      case Some(GraphiteMetricErrorStatus.name) => Some(GraphiteMetricErrorStatus)
-      case _                                    => None
-    }
-  }
-
 
   implicit val applicationFormat: Format[Application] = (
       (__ \ "id").formatNullable[Long] ~
@@ -175,12 +176,8 @@ object ModelImplicits {
 
   implicit object JobStatusFormat extends Format[JobStatus] {
     def reads(json: JsValue) = JsSuccess(json match {
-      case JsString(SuccessStatus.name)             => SuccessStatus
-      case JsString(FailedStatus.name)              => FailedStatus
-      case JsString(ErrorStatus.name)               => ErrorStatus
-      case JsString(GraphiteErrorStatus.name)       => GraphiteErrorStatus
-      case JsString(GraphiteMetricErrorStatus.name) => GraphiteMetricErrorStatus
-      case _                                        => sys.error("Unknown JobStatus")
+      case JsString(s) => JobStatus.unapply(s).getOrElse(sys.error(s"Unknown JobStatus: $s"))
+      case j           => sys.error(s"JobStatus should be a JsString. Found ${j.getClass}")
     })
     def writes(status: JobStatus) = JsString(status.name)
   }

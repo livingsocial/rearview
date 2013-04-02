@@ -118,24 +118,21 @@ class JobDAOSpec extends Specification with MatchersImplicits {
       updatedJob.flatMap(_.id) === savedJob.flatMap(_.id)
     }
 
-
     "updateStatus" in jobContext { monitorJob: Job =>
       val savedJob = JobDAO.store(monitorJob)
       savedJob.flatMap(_.id) must beSome
 
-      val lastRun = new Date
-
-      val updatedJob = savedJob.map(j => JobDAO.updateStatus(j.copy(status = Some(SuccessStatus), lastRun = Some(lastRun))))
-      updatedJob.flatMap(_.status) must beSome(SuccessStatus)
-      updatedJob.flatMap(_.lastRun) must beSome
+      val lastRun  = new Date
+      val statuses = List(SuccessStatus, ErrorStatus, FailedStatus, GraphiteErrorStatus, GraphiteMetricErrorStatus, SecurityErrorStatus)
 
       // test all enums and status work
-      savedJob foreach { j =>
-        JobDAO.updateStatus(j.copy(status = Some(ErrorStatus), lastRun = Some(lastRun)))
-        JobDAO.updateStatus(j.copy(status = Some(FailedStatus), lastRun = Some(lastRun)))
-        JobDAO.updateStatus(j.copy(status = Some(GraphiteErrorStatus), lastRun = Some(lastRun)))
-        JobDAO.updateStatus(j.copy(status = Some(GraphiteMetricErrorStatus), lastRun = Some(lastRun)))
+      statuses foreach { s =>
+        JobDAO.updateStatus(savedJob.get.copy(status = Some(s), lastRun = Some(lastRun)))
+        val updatedJob = JobDAO.findById(savedJob.get.id.get)
+        updatedJob.flatMap(_.status) must beSome(s)
+        updatedJob.flatMap(_.lastRun) must beSome
       }
+
       true
     }
 
