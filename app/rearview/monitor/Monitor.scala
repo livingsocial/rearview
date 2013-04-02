@@ -100,59 +100,56 @@ object Monitor {
                namespace:   Map[String, Any] = Map(),
                verbose:     Boolean = false): AnalysisResult = {
 
-    val writer = new StringWriter
+    val writer = new StringWriter // StringWriter does not need to be closed explicitly.
 
-    try {
-      // Creates script container and local namespace for evaluation
-      val (container, wrapper) = initializeRuntime(writer, data, namespace)
+    // Creates script container and local namespace for evaluation
+    val (container, wrapper) = initializeRuntime(writer, data, namespace)
 
-      // All variables must be re-set into the JRuby container on each eval
-      val result = try {
-        // Call JRuby eval on the monitor expression, within the wrapper context
-        container.eval[Object](wrapper, monitorExpr.getOrElse("")) match {
-          case h: RubyHash =>
-            // Transform the graph data to JSON to be sent to the client
-            val graphData = Option(h.get("graph_data")).map(gd => graphDataToJson(gd, data)).getOrElse(JsObject(Nil))
+    // All variables must be re-set into the JRuby container on each eval
+    val result = try {
+      // Call JRuby eval on the monitor expression, within the wrapper context
+      container.eval[Object](wrapper, monitorExpr.getOrElse("")) match {
+        case h: RubyHash =>
+          // Transform the graph data to JSON to be sent to the client
+          val graphData = Option(h.get("graph_data")).map(gd => graphDataToJson(gd, data)).getOrElse(JsObject(Nil))
 
-            Option(h.get("status")).map { s =>
-              s match {
-                case "failed" => (FailedStatus, graphData, Option(h.get("output")).map(_.toString))
-                case _        => (SuccessStatus, graphData, None)
-              }
-            }.getOrElse((FailedStatus, JsObject(Nil), Some("Unexpected result from eval wrapper")))
+          Option(h.get("status")).map { s =>
+            s match {
+              case "failed" => (FailedStatus, graphData, Option(h.get("output")).map(_.toString))
+              case _        => (SuccessStatus, graphData, None)
+            }
+          }.getOrElse((FailedStatus, JsObject(Nil), Some("Unexpected result from eval wrapper")))
 
-          case o => throw new Exception(s"Expected RubyHash, got ${o.getClass}")
-        }
-      } catch {
-        case e: Exception if((e.getCause.isInstanceOf[SecurityException])) =>
-          Logger.error("SecurityException", e)
-          writer.append(e.getMessage())
-          (SecurityErrorStatus, JsObject(Nil), Some(e.getMessage()))
-
-        case e: Throwable =>
-          Logger.error("Failed to evaluate JRuby", e)
-          writer.append(e.getMessage())
-          (ErrorStatus, JsObject(Nil), Some(e.getMessage()))
+        case o => throw new Exception(s"Expected RubyHash, got ${o.getClass}")
       }
+    } catch {
+      case e: Exception if e.getCause.isInstanceOf[SecurityException] =>
+        Logger.error("SecurityException", e)
+        writer.append(e.getMessage())
+        (SecurityErrorStatus, JsObject(Nil), Some(e.getMessage()))
 
-      val output = writer.toString
-      Logger.debug(output)
-
-      val raw = MonitorOutput(result._1, output, result._2)
-
-      AnalysisResult(result._1, raw, result._3, data)
-    } finally {
-      writer.close
+      case e: Throwable =>
+        Logger.error("Failed to evaluate JRuby", e)
+        writer.append(e.getMessage())
+        (ErrorStatus, JsObject(Nil), Some(e.getMessage()))
     }
+
+    val output = writer.toString
+    Logger.debug(output)
+
+    val raw = MonitorOutput(result._1, output, result._2)
+
+    AnalysisResult(result._1, raw, result._3, data)
   }
 
 
   /**
-   * Creates the JRuby ScriptingContainer and a namespace for Ruby expressions to be evaluated in
+   * Creates the JRuby ScriptingContainer and a namespace for Ruby expressions to be evaluated within.
    */
   def initializeRuntime(writer: Writer, data: TimeSeries, preDefNS: Map[String, Any]) = {
     val container = JRubyContainerCache.get
     container.setWriter(writer)
+    container.setErrorWriter(writer)
 
     // Convert all variable mappings to (String, Any) in prep to build map
     val preDefs = preDefNS.map { kv =>
