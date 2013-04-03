@@ -1,0 +1,45 @@
+/* bootstrap alert override styles */
+.alert-wrap {
+    top         : -100px;
+    height      : auto;
+    left        : 0;
+    margin-top  : 0;
+    margin-left : 0;
+    display     : block;
+    position    : fixed;
+    width       : 100% !important;
+    z-index     : 1058;
+
+    -webkit-transition: all 1s;
+    .transition-duration(1s);
+
+    .alert {
+        text-align       : center;
+        margin           : 0 25%;
+        border-radius    : 4px !important;
+        border           : none !important;
+        background-color : rgba(0,0,0,0.7) !important;
+        color            : #efc338 !important;
+        text-shadow      : none;
+        line-height      : 30px;
+
+        .proxima-regular(17px);
+    }
+
+    .alert-error {
+        color         : #cc3e3a !important;
+    }
+
+    .alert-success {
+        color         : #6ea933 !important;
+
+        .close {
+            color   : #6ea933 !important;
+            opacity : 0.7 !important;
+        }
+    }
+}
+
+.alert-wrap.active {
+    .transform(translateY(150px)) !important;
+}

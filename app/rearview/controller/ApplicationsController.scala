@@ -4,10 +4,10 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.Json
 import play.api.mvc.BodyParsers
 import play.api.mvc.Controller
-import rearview.dao.{JobDAO, ApplicationDAO, UserDAO}
-import rearview.model.ModelImplicits._
-import rearview.job.Scheduler
 import rearview.Global
+import rearview.dao.{JobDAO, ApplicationDAO, UserDAO}
+import rearview.job.Scheduler
+import rearview.model.ModelImplicits._
 
 trait ApplicationsController extends Controller with Security {
 
@@ -59,6 +59,10 @@ trait ApplicationsController extends Controller with Security {
 
   def listJobs(id: Long) = Authenticated { implicit request =>
     Ok(Json.toJson(JobDAO.findByApplication(id)))
+  }
+
+  def listErrors(id: Long) = Authenticated { implicit request =>
+    Ok(Json.toJson(JobDAO.findErrorsByApplicationId(id)))
   }
 
 

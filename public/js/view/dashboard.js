@@ -9,6 +9,7 @@ define([
     'view/smallmonitor',
     'view/editmonitor',
     'view/addmonitor',
+    'view/alerttimeline',
     'codemirror',
     'highcharts',
     'highcharts-gray',
@@ -27,6 +28,7 @@ define([
     SmallMonitorView,
     EditMonitorView,
     AddMonitorView,
+    AlertTimelineView,
     CodeMirror,
     HighChart
 ){  
@@ -35,13 +37,14 @@ define([
         monitors        : [],
 
         subscriptions : {
-            'view:editmonitor:open'  : 'hideDash',
-            'view:editmonitor:exit'  : 'showDash',
-            'view:editmonitor:save'  : 'updateDash',
-            'view:addmonitor:close'  : 'showDash',
-            'view:addmonitor:save'   : 'updateDash',
-            'view:addmonitor:show'   : 'hideDash',
-            'view:smallmonitor:edit' : 'editMonitor'
+            'view:editmonitor:open'           : 'hideDash',
+            'view:editmonitor:exit'           : 'updateDash',
+            'view:editmonitor:save'           : 'updateDash',
+            'view:addmonitor:close'           : 'showDash',
+            'view:addmonitor:save'            : 'updateDash',
+            'view:addmonitor:show'            : 'hideDash',
+            'view:smallmonitor:edit'          : 'editMonitor',
+            'alerttimeline:view:troubleshoot' : 'editMonitor'
         },
 
         initialize : function(options) {
@@ -67,6 +70,21 @@ define([
                 'appId'   : self.appId,
                 'templar' : self.templar
             });
+
+            // check for an alert state after dashboard init
+            
+
+            self.alertTimelineView = new AlertTimelineView({
+                'el'         : $('.timeline-wrap'),
+                'collection' : self.collection,
+                'appId'      : self.appId,
+                'user'       : self.user,
+                'status'     : self.checkDashboardAlertState(),
+                'templar'    : self.templar
+            });
+
+
+            
 
             Backbone.Mediator.pub('view:dashboard:init');
         },
@@ -101,6 +119,7 @@ define([
             });
 
             self.showDash();
+            Backbone.Mediator.pub('view:dashboard:complete');
         },
 
         getApplicationInfo : function(appId, cb) {
@@ -115,15 +134,15 @@ define([
             });
         },
 
-        editMonitor : function(data) {
+        editMonitor : function(id) {
             var self = this;
-            self.editMonitorView.render(data);
+            self.editMonitorView.render(id);
         },
 
         updateDash : function(data) {
             var self = this;
-	    if (data.status && data.status != 'error') {
-		self.collection = new JobCollection(null, {
+            if (data && data.status && data.status != 'error') {
+                self.collection = new JobCollection(null, {
                     appId : self.appId
                 });
 
@@ -147,7 +166,7 @@ define([
                 self.updateSavedMonitorStatus(data);
             }
 
-            // destroy nexted views and recreate them
+            // destroy nested views and recreate them
             self.editMonitorView.destructor();
             self.editMonitorView = new EditMonitorView({
                 'el'      : $('.edit-monitor-wrap'),
@@ -196,6 +215,23 @@ define([
                 });
             }
         },
+
+        checkDashboardAlertState : function() {
+            var self = this;
+
+            self.collection.each(function(model) {
+                if ( model.get('status') !== 'success' && typeof model.get('status') != 'undefined' && model.get('active') ) {
+                    self.dashboardAlert = true;
+                }
+            });
+
+            if ( self.dashboardAlert ) {
+                Backbone.Mediator.pub('view:dashboard:alert');
+            }
+
+            return self.dashboardAlert;
+        },
+
         /** internal
          * SmallMonitorView#_updateMonitorList(monitorEl)
          * - monitorEl (Object): DOM object reference to small monitor
@@ -289,7 +325,8 @@ define([
             // clean up edit/add monitor view
             self.editMonitorView.destructor();
             self.addMonitorView.destructor();
-            
+            self.alertTimelineView.destructor();
+            //
             self.remove();
             self.unbind();
             self.monitors = [];

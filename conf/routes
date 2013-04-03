@@ -21,6 +21,7 @@ GET     /graphite/*path                rearview.controller.GraphiteController.gr
 GET     /applications                  rearview.controller.ApplicationsController.list
 GET     /applications/:id              rearview.controller.ApplicationsController.fetch(id: Long)
 GET     /applications/:id/jobs         rearview.controller.ApplicationsController.listJobs(id: Long)
+GET     /applications/:id/errors       rearview.controller.ApplicationsController.listErrors(id: Long)
 POST    /applications                  rearview.controller.ApplicationsController.create()
 PUT     /applications/:id              rearview.controller.ApplicationsController.update(id: Long)
 DELETE  /applications/:id              rearview.controller.ApplicationsController.delete(id: Long)

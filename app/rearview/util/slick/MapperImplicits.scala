@@ -11,6 +11,7 @@ import scala.slick.session.PositionedParameters
 import scala.slick.session.PositionedResult
 
 object MapperImplicits {
+
   implicit object DateTypeMapperDelegate extends BaseTypeMapper[Date] with TypeMapperDelegate[Date] {
     def apply(p: BasicProfile) = this
     def zero = new Date(0L)

@@ -26,6 +26,10 @@ define([
             'click .name-save' : 'updateMonitorName'
         },
 
+        subscriptions : {
+            'view:alerttimeline:toggle' : 'setAlertTimelineHeightOffset'
+        },
+
         initialize : function(options) {
             var self = this;
             _.bindAll(this);
@@ -52,16 +56,11 @@ define([
             Backbone.Mediator.sub('view:deletemonitor:delete', self.deleteMonitor, self);
         },
 
-        render : function(data) {
+        render : function(id) {
             var self = this;
 
-            self.monitorId = data.id;
-            self.model = data.model;
-
-            // make sure update has a reference to the instance and model
-            // at the time of editing/updating
-            _.bind(self.updateMonitor, self, data.model);
-            self.initMonitor(data);
+            self.monitorId = id;
+            self.initMonitor();
         },
         /**
          * EditMonitorView#initMonitor(model)
@@ -69,11 +68,16 @@ define([
          *
          *
          **/
-        initMonitor : function(data) {
+        initMonitor : function() {
             var self = this;
 
             // retrieve monitor model & graph data
             self.getMonitor(self.monitorId, function(result) {
+                // make sure update has a reference to the instance and model
+                // at the time of editing/updating
+                self.model = result;
+                _.bind(self.updateMonitor, self, self.model);
+
                 self.getGraphData(self.monitorId, function(result) {
 
                     self._initErrorsList(function(errors) {
@@ -208,22 +212,10 @@ define([
                 title     : $content
             });
 
-            
+
         },
         /**
-         * EditMonitorView#edit(model)
-         * - data (Object): {
-         *                      model     : job (monitor) backbone model object,
-         *                      graphData : data retrieved and formatted
-         *                  }
-         *
-         **/
-        edit : function(data) {
-            var self = this;
-            self.render(data);
-        },
-        /**
-         * EditMonitorView#edit()
+         * EditMonitorView#open()
          *
          *
          **/
@@ -258,7 +250,9 @@ define([
             }
 
             // fire event that editmonitor is exiting
-            Backbone.Mediator.pub('view:editmonitor:exit');
+            Backbone.Mediator.pub('view:editmonitor:exit', {
+                status : 'delete'
+            });
         },
         /**
          * EditMonitorView#updateGraph(model, cb)
@@ -357,9 +351,9 @@ define([
 
             monitor = self._setMetrics(monitor);
             monitor = self._setSchedule(monitor);
-            
+
             monitor.save(null, {
-                success : function(model, response, options) { 
+                success : function(model, response, options) {
                     Backbone.Mediator.pub('view:editmonitor:save', {
                         'model'     : self.model,
                         'message'   : "The monitor '" + model.get('name') + "' was saved.",
@@ -371,7 +365,7 @@ define([
                     self.exit(monitor);
                     self.updateGraph(monitor);
                 },
-                error : function(model, xhr, options) { 
+                error : function(model, xhr, options) {
                     Backbone.Mediator.pub('view:editmonitor:save', {
                         'model'     : self.model,
                         'message'   : "The monitor '" + model.get('name') + "' caused an error on saving, please try again.",
@@ -448,15 +442,23 @@ define([
 
             Backbone.Mediator.unsubscribe('view:dashboard:init', self.exit, self);
             Backbone.Mediator.unsubscribe('view:deletemonitor:delete', self.deleteMonitor, self);
+            Backbone.Mediator.unsubscribe('view:alerttimeline:show', self._setExpandedViewHeight, self);
 
             $prevSibling.after("<div class='edit-monitor-wrap clearfix'>");
         },
+        setAlertTimelineHeightOffset : function(heightOffset) {
+            var self = this;
+
+            self.alertTimelineOffset = heightOffset;
+            self._setExpandedViewHeight();
+        },
+
         /**
          *
          */
         _setExpandedViewHeight : function() {
             var self         = this,
-                windowOffSet = 550,
+                windowOffSet = ( this.alertTimelineOffset ) ? ( 580 + this.alertTimelineOffset ) : 580,
                 alertsOffset = 6,
                 outputOffset = 4;
 
@@ -500,7 +502,7 @@ define([
             $.get('/jobs/' + monitorId + '/errors', function(data) {
                 data = _.map(data, function(error) {
                     return {
-                        label   : new XDate(error.date).toUTCString("MM/dd/yyyy HH:mm"),
+                        label   : new XDate(error.date, true).toString("MM/dd/yyyy HH:mm"),
                         value   : error.date,
                         message : error.message,
                         id      : error.id

@@ -248,7 +248,7 @@ Using *start* requires server restarts since all code and templates are cached.
       <td>Steve Akers</td><td>Project Manager/Analytics Master</td><td><a href="https://twitter.com/SteveAkers">@SteveAkers</a></td><td><a href="https://github.com/steveakers">https://github.com/steveakers</a></td>
     </tr>
     <tr>
-      <td>Ian Quattlebaum</td><td>Lead UI developer</td><td><a href="https://twitter.com/iQuatt">@iQuatt</a></td><td><a href="https://github.com/ianqueue">https://github.com/ianqueue</a></td>
+      <td>Ian Quattlebaum</td><td>Lead Front End developer</td><td><a href="https://twitter.com/ianqueue">@ianqueue</a></td><td><a href="https://github.com/ianqueue">https://github.com/ianqueue</a></td>
     </tr>
     <tr>
       <td>Jeff Simpson</td><td>Architect/Lead developer</td><td><a href="https://twitter.com/fooblahblah">@fooblahblah</a></td><td><a href="https://github.com/fooblahblah">https://github.com/fooblahblah</a></td>

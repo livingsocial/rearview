@@ -217,12 +217,7 @@ define([
         editMonitor : function() {
             var self = this;
 
-            Backbone.Mediator.pub('view:smallmonitor:edit', {
-                id         : self.model.get('id'),
-                model      : self.model,
-                graphData  : self.formattedGraphData,  // passing this so we don't have to make another call to monitor route
-                errorState : self.errorState
-            }, self);
+            Backbone.Mediator.pub('view:smallmonitor:edit', self.model.get('id'), self);
         },
         monitorSettings : function(e) {
             self = this;

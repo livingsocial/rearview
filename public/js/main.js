@@ -17,7 +17,8 @@ require.config({
         'parsley'               : '../vendor/parsley/js/parsley.min',
         'underscore'            : '../vendor/underscore/js/underscore',
         'underscore-string'     : '../vendor/underscore/plugins/underscore-string/js/underscore.string',
-        'xdate'                 : '../vendor/xdate/js/xdate'
+        'xdate'                 : '../vendor/xdate/js/xdate',
+        'timeline'              : '../vendor/timeline/timeline'
     },
     shim : {
         'backbone' : {
@@ -65,6 +66,9 @@ require.config({
         },
         'parsley' : {
             deps    : ['jquery']
+        },
+        'timeline' : {
+            exports : 'timeline'
         },
         'underscore' : {
             exports : '_'

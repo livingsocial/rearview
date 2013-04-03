@@ -2,6 +2,7 @@ package rearview.dao
 
 import java.util.Date
 import org.junit.runner.RunWith
+import org.joda.time._
 import org.specs2.execute._
 import org.specs2.mutable._
 import org.specs2.specification.AroundOutside
@@ -179,16 +180,26 @@ class JobDAOSpec extends Specification with MatchersImplicits {
       JobDAO.list(true).length === 1
     }
 
+    "store job description" in jobContext { monitorJob: Job =>
+      val savedJob = JobDAO.store(monitorJob.copy(description = Some("foo")))
+      savedJob.flatMap(_.id) must beSome
+
+      val job = savedJob.flatMap(j => JobDAO.findById(j.id.get))
+      job must beSome
+      job.get.description === Some("foo")
+    }
+
     "store job errors" in jobContext { monitorJob: Job =>
       val savedJobOpt = JobDAO.store(monitorJob)
       savedJobOpt.flatMap(_.id) must beSome
 
       val savedJob = savedJobOpt.get
       val msg = "This is an error message"
-      1 to 30 foreach(i => JobDAO.storeError(savedJob.id.get, Some(msg)))
+      1 to 30 foreach(i => JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg)))
 
-      val errors = JobDAO.findErrorsByJobId(savedJob.id.get)
-      errors.length === 25
+      // Successive errors are squashed until the next success
+      val errors = JobDAO.findErrorsByJobId(savedJob.id.get, 25)
+      errors.length === 1
       savedJob.id === Some(errors.head.jobId)
       errors.head.message === Some(msg)
     }
@@ -198,13 +209,103 @@ class JobDAOSpec extends Specification with MatchersImplicits {
       savedJob.flatMap(j => JobDAO.findById(j.id.get).map(_.errorTimeout)) === Some(120)
     }
 
-    "store job description" in jobContext { monitorJob: Job =>
-      val savedJob = JobDAO.store(monitorJob.copy(description = Some("foo")))
-      savedJob.flatMap(_.id) must beSome
 
-      val job = savedJob.flatMap(j => JobDAO.findById(j.id.get))
-      job must beSome
-      job.get.description === Some("foo")
+    "filter errors for deleted jobs" in jobContext { monitorJob: Job =>
+      val savedJob = JobDAO.store(monitorJob.copy(deletedAt = Some(new Date))).get
+      savedJob.id must beSome
+
+      val msg = "Duration error test"
+      val initialDate = new DateTime().minusMinutes(10)
+
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(4).toDate)
+
+      JobDAO.findErrorsByJobId(savedJob.id.get).length === 0
     }
+
+
+    "calculate error duration" in jobContext { monitorJob: Job =>
+      val savedJob = JobDAO.store(monitorJob).get
+      savedJob.id must beSome
+
+      val msg = "Duration error test"
+      val initialDate = new DateTime().minusMinutes(10)
+
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(4).toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(5).toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(8).toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(9).toDate) // this should be dropped
+
+      JobDAO.findErrorsByJobId(savedJob.id.get).map {
+        e => e.endDate.map(d => Minutes.minutesBetween(new DateTime(e.date), new DateTime(d)).getMinutes())
+      } === List(Some(9))
+    }
+
+    "calculate error duration with correct state transitions" in jobContext { monitorJob: Job =>
+      val savedJob = JobDAO.store(monitorJob).get
+      savedJob.id must beSome
+
+      val msg = "Duration error test"
+      val initialDate = new DateTime().minusMinutes(90)
+
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(60).toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(63).toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(64).toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(65).toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(85).toDate)
+
+      JobDAO.findErrorsByJobId(savedJob.id.get).map {
+        e => e.endDate.map(d => Minutes.minutesBetween(new DateTime(e.date), new DateTime(d)).getMinutes())
+      } === List(Some(20), Some(1), Some(60))
+    }
+
+    "fetch all errors by application" in jobContext { monitorJob: Job =>
+      val savedJob  = JobDAO.store(monitorJob).get
+      savedJob.id must beSome
+      val savedJob2 = JobDAO.store(monitorJob).get
+      savedJob2.id must beSome
+
+      val msg = "Duration error test"
+      val initialDate = new DateTime().minusMinutes(30)
+
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(1).toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(3).toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(4).toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(10).toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(15).toDate)
+
+      JobDAO.storeError(savedJob2.id.get, FailedStatus, Some(msg), initialDate.toDate)
+      JobDAO.storeError(savedJob2.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(1).toDate)
+      JobDAO.storeError(savedJob2.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(10).toDate)
+      JobDAO.storeError(savedJob2.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(13).toDate)
+
+      JobDAO.findErrorsByApplicationId(savedJob.appId).sortBy(_.jobId).map {
+        e => e.endDate.map(d => Minutes.minutesBetween(new DateTime(e.date), new DateTime(d)).getMinutes())
+      } === List(Some(5), Some(1), Some(1), Some(3), Some(1))
+    }
+
+    "fetch non-deleted errors by application" in jobContext { monitorJob: Job =>
+      val savedJob  = JobDAO.store(monitorJob).get
+      savedJob.id must beSome
+      val savedJob2 = JobDAO.store(monitorJob.copy(deletedAt=Some(new Date))).get
+      savedJob2.id must beSome
+
+      val msg = "Duration error test"
+      val initialDate = new DateTime().minusMinutes(30)
+
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(1).toDate)
+
+      JobDAO.storeError(savedJob2.id.get, FailedStatus, Some(msg), initialDate.toDate)
+      JobDAO.storeError(savedJob2.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(1).toDate)
+      JobDAO.storeError(savedJob2.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(10).toDate)
+      JobDAO.storeError(savedJob2.id.get, SuccessStatus, Some(msg), initialDate.plusMinutes(13).toDate)
+
+      JobDAO.findErrorsByApplicationId(savedJob.appId).length === 1
+    }
+
   }
 }

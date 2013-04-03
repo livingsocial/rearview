@@ -71,6 +71,9 @@ trait Scheduled {
     // Store data for last run
     JobDAO.storeData(job.id.get, Json.toJson(result.output))
 
+    // Tracks the state transitions between runs. Allows us to calculate duration
+    storeJobState(job, status, result)
+
     // Post to statsd/grphite
     sendStats(job, status)
 
@@ -97,10 +100,8 @@ trait Scheduled {
         new DateTime().isAfter(new DateTime(lastError.getTime).plusMinutes(job.errorTimeout))
       } getOrElse(true)
 
-      if(job.status == Some(SuccessStatus) || pastErrorTimeout) {
-        // If the status was not success, store some errors.
-        storeError(job, status, result)
-
+      // If the last run job status was the first (not defined) or was success or past the timeout period
+      if(!job.status.isDefined || job.status == Some(SuccessStatus) || pastErrorTimeout) {
         job.alertKeys.foreach { keys =>
           alertClients foreach { client =>
             client.send(job, result)
@@ -117,9 +118,10 @@ trait Scheduled {
    * @param status
    * @param result
    */
-  def storeError(job: Job, status: JobStatus, result: AnalysisResult) {
-    if(status != SuccessStatus)
-      JobDAO.storeError(job.id.get, result.message)
+  def storeJobState(job: Job, status: JobStatus, result: AnalysisResult) {
+      // If the last run job status was the first (not defined) or did not match, store a transition
+    if(!job.status.isDefined || status != job.status.get)
+      JobDAO.storeError(job.id.get, status, result.message)
   }
 
 

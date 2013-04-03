@@ -1,11 +1,11 @@
 @(version: String)
 
-@main("Rearview | LivingSocial") {
+@main("Rearview") {
 
 <!DOCTYPE html>
 <html lang='en'>
     <head>
-        <title>LivingSocial | Rearview</title>
+        <title>Rearview</title>
         <meta charset='utf-8' />
         <meta name='description' content='Real-Time Monitoring'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
@@ -20,6 +20,7 @@
         <link href="@routes.Assets.at("/public", "vendor/bootstrap/plugins/font-awesome/css/font-awesome.css")" rel="stylesheet">
         <link href="@routes.Assets.at("/public", "vendor/codemirror/lib/codemirror.css")" rel='stylesheet' />
         <link href="@routes.Assets.at("/public", "vendor/codemirror/theme/ambiance.css")" rel='stylesheet' />
+        <link href="@routes.Assets.at("/public", "vendor/timeline/timeline.css")" rel='stylesheet' />
 
         <link href="@routes.Assets.at("/public", "less/rearview.less")" rel='stylesheet/less' type='text/css' />
         <script src="@routes.Assets.at("/public", "vendor/less/js/less.js")" type='text/javascript'></script>
@@ -35,6 +36,7 @@
         <section class='alert-wrap clearfix'></section>
         <section class='primary-nav-wrap clearfix'></section>
         <section class='header-wrap clearfix'></section>
+        <section class='timeline-wrap clearfix'></section>
         <section class='ecosystem-application-wrap clearfix'>
             <div class='add-application-wrap clearfix'></div>
         </section>

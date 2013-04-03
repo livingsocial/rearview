@@ -5,8 +5,10 @@ html {
 }
 
 body {
-    background : #373737;
-    height     : 100%;
+    background    : #373737;
+    height        : 100%;
+    padding-left  : 0;
+    padding-right : 0;
 }
 
 hr {
@@ -64,99 +66,11 @@ hr {
             transform : @string;
 }
 
-/* document wrapper */
+/* application wrapper */
 .ls-rearview {
 
-    /* primary navigation bar */
-    .nav-primary .navbar-inner {
-        border-bottom : 1px solid #000;
-        .gradient( #171717, #171717, #555 );
-    }
-
-    .nav-primary.navbar {
-        .nav > .active > a,
-        .nav > .active > a:hover,
-        .nav > .active > a:focus {
-            .gradient( #2d4249, #2d4249, #52676e );
-            .proxima-bold();
-        }
-
-        .nav > li > .dropdown-menu:after {
-            top: -8px;
-        }
-
-        .nav > li > .dropdown-menu:before {
-            border : none;
-            content: none;
-            display: none;
-        }
-
-        .nav > li > a {
-            color          : #9d9a94;
-            text-shadow    : none;
-            text-transform : uppercase;
-
-            .proxima-regular();
-        }
-
-        .nav > li.active a {
-            color : #fff;
-        }
-
-        .brand {
-            margin-top     : -5px;
-            padding-bottom : 0;
-            color          : #fff;
-            text-shadow    : none;
-
-            .proxima-bold(20px);
-
-            img {
-                vertical-align : -6px;
-                margin-right   : 8px;
-            }
-        }
-
-        /* primary nav drop down styles */
-        .dropdown-menu {
-            padding            : 0;
-            border             : 2px solid #fff;
-            background         : rgba(0,0,0,0.75);
-
-            box-shadow         : 0px 0px 7px #333;
-            -moz-box-shadow    : 0px 0px 7px #333;
-            -webkit-box-shadow : 0px 0px 7px #333;
-
-            a {
-                color          : #fff;
-                line-height    : 30px;
-                text-transform : uppercase;
-            }
-
-            li {
-                background    : none;
-                border-bottom : 1px solid black;
-                border-top    : 1px solid #555;
-            }
-
-            li:first-child {
-                border-top : none;
-            }
-
-            li:last-child {
-                border-bottom : none;
-            }
-
-            li:first-child a:hover {
-                border-radius : 5px 5px 0 0;
-            }
-
-            li:last-child a:hover {
-                border-radius : 0 0 5px 5px;
-            }
-        }
-    }
-
+    /* primary navigation styles */
+    @import "primarynav.less";
 
     /* footer nav bar */
     .footer-action-bar .navbar-inner {
@@ -264,7 +178,203 @@ hr {
         }
     }
 
-    /* new add monitor wizard */
+    /* alert timeline styles */
+    .alert-timeline {
+        position   : relative;
+        top        : -14px;
+        box-shadow : 0 31px 46px -10px #000;
+
+        /* trapazoid technique accordian heading */
+        .polygon,
+        .trapezoid {
+            margin     : 0;
+            padding    : 0;
+            background : none;
+        }
+
+        .polygon {
+            border     : medium none;
+            display    : inline-block;
+            text-align : center;
+            width      : 10em;
+            color      : #F5F4EE;
+        }
+
+        .trapezoid {
+            margin       : 0 auto;
+            display      : inline-block;
+            height       : 0;
+            width        : 1px;
+            border-left  : 5em solid transparent;
+            border-right : 5em solid transparent;
+        }
+
+        .polygon.tab .size {
+            width        : 2.3em;
+            border-width : 1.3em 0.8em;
+        }
+
+        .polygon .size {
+            border-bottom : none;
+            border-top    : 10em solid;
+        }
+
+        /* alert timeline accordian styles */
+        .accordion-group {
+            margin-bottom : 0;
+            border-radius : 0;
+            background    : #000;
+        }
+
+        .accordion-group,
+        .accordion-inner {
+            border : none;
+        }
+
+        .accordion-inner {
+            padding : 2px 0 0 0;
+        }
+
+        .accordion-heading {
+            position : absolute;
+            display  : inline-block;
+            height   : 20px;
+            left     : -61px;
+
+            p {
+                position    : relative;
+                top         : -24px;
+                color       : #444240;
+                text-indent : 3px;
+
+                .proxima-regular();
+            }
+
+            .alert-status {
+                color : #735854;
+            }
+        }
+
+        .accordion-heading .accordion-toggle {
+            margin-top : 2px;
+            padding : 0;
+            outline : none;
+        }
+
+        .accordion-heading .accordion-toggle:hover {
+            color : #F5F4EE;
+        }
+
+        /* timeline overriding styles */
+        div.timeline-event-content {
+            color : #735854;
+            /* just the monitor name, hiding it
+               by making it the same color as it's background */
+
+            .proxima-regular(82%);
+        }
+
+        div.timeline-event-content {
+            margin: 0 4px;
+        }
+
+        div.timeline-event-box,
+        div.timeline-event-range {
+            background : #735854; /*#373737;*/
+            border : 2px solid #735854 !important;
+            color : #F5F4ED;
+            border-radius : 2px;
+        }
+
+        div.timeline-frame {
+            border     : none;
+            background : #F5F4EE;
+        }
+
+        div.timeline-axis-grid-minor {
+            border-color: #ccc;
+        }
+
+        div.timeline-axis-grid-major {
+            border-color: #999;
+        }
+
+        div.timeline-event {
+            cursor       : pointer;
+            border-color : #999;
+        }
+
+        div.timeline-event-line {
+            border-color: #999;
+            border-left-style: solid;
+            border-left-width: 1px;
+        }
+
+        div.timeline-event-dot {
+            height : 6px !important;
+            width  : 6px !important;
+            background : #fff !important;
+            border-radius : 5px;
+            border-width  : 2px;
+        }
+
+        /* font styles */
+        div.timeline-axis-text {
+            color : #444240;
+
+            .proxima-regular();
+        }
+
+        /* navigation button styles */
+        div.timeline-navigation {
+            background-color : inherit;
+            border           : none;
+            border-radius    : inherit;
+            color            : inherit;
+            font-family      : inherit;
+            font-size        : inherit;
+            font-weight      : inherit;
+            opacity          : 0.6;
+
+            -webkit-transition : opacity 0.3s ease-in-out;
+               -moz-transition : opacity 0.3s ease-in-out;
+                    transition : opacity 0.3s ease-in-out;
+        }
+        div.timeline-navigation:hover {
+            opacity : 1;
+        }
+    }
+
+    /* popover style overides for alert timeline */
+    .popover {
+        width : 400px !important;
+        margin-left : -200px !important;
+
+        left: 50% !important;
+        h3,
+        .arrow {
+            display : none;
+        }
+
+        .btn {
+            margin : 2px;
+        }
+    }
+
+    .popover-content {
+        margin  : 0;
+        padding : 2px;
+
+        .small-monitor {
+            margin-bottom : 0 !important;
+
+            .btn-group {
+                display : none !important;
+            }
+        }
+    }
+
+    /* add monitor wizard */
     .modal {
         width       : 880px;
         margin-top  : -284px;
@@ -756,226 +866,8 @@ hr {
         -webkit-backface-visibility : hidden;
     }
 
-    /* expanded monirot widget styles */
-    .expanded-monitor {
-        margin        : 0 6%;
-        padding       : 2px;
-        position      : relative;
-        background    : #545954;
-        border-radius : 5px;
-        color         : #fff;
-        min-height    : 400px;
-        min-width     : 900px;
-
-        .proxima-regular();
-
-        .expressions {
-            width : 50%;
-        }
-
-        .metrics-test {
-            width : 48%;
-
-            .metrics {
-                margin-bottom : 10px;
-                display : block;
-                clear   : both;
-                width   : 100%;
-            }
-
-            .test-in-graph {
-                margin-right : 0;
-            }
-
-            .save-changes hr {
-                border-color : #B6B3A6;
-            }
-        }
-
-        .data-view {
-            margin        : 3px 3px 10px 3px;
-            padding       : 3px;
-            float         : left;
-            width         : 66%;
-            background    : #767a76;
-            border-radius : 4px;
-        }
-
-        .metrics-schedule {
-            margin : 3px;
-
-            fieldset.pager-duty {
-                margin-right : 0;
-            }
-
-            fieldset.pager-duty textarea,
-            fieldset.description textarea {
-                width : 430px;
-            }
-
-            .day-month-picker {
-                margin-bottom : 70px;
-
-                .btn-group {
-                    margin-bottom : 10px;
-                }
-            }
-
-            .day-month-picker,
-            .description,
-            .pager-duty {
-                margin-top : 5px;
-            }
-
-            .tab-content {
-                overflow   : auto;
-                max-height : 221px;
-            }
-
-
-            .button-view {
-                margin        : 10px 0 0 0;
-                padding       : 3px;
-                background    : #767a76;
-                border-radius : 4px;
-            }
-        }
-
-        label {
-            margin-bottom  : 3px;
-            color          : #b6b3a6;
-            font-size      : 14px;
-            text-transform : uppercase;
-
-            i {
-                font-size  : 10px;
-                font-style : normal;
-            }
-        }
-
-        .name-field {
-            margin-bottom : 3px;
-            display       : none;
-            input {
-                margin-bottom : 0;
-            }
-        }
-
-        /* different highlighting on expanded view fields */
-        textarea:focus,
-        input[type="text"]:focus,
-        input[type="password"]:focus,
-        input[type="datetime"]:focus,
-        input[type="datetime-local"]:focus,
-        input[type="date"]:focus,
-        input[type="month"]:focus,
-        input[type="time"]:focus,
-        input[type="week"]:focus,
-        input[type="number"]:focus,
-        input[type="email"]:focus,
-        input[type="url"]:focus,
-        input[type="search"]:focus,
-        input[type="tel"]:focus,
-        input[type="color"]:focus,
-        .uneditable-input:focus {
-            border-color : #b6b3a6;
-            box-shadow   : 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(182, 179, 166, 0.7);
-            outline      : 0 none;
-        }
-    }
-
-    .authentication-stats {
-        margin : 0 auto;
-        width  : 100%;
-
-        label {
-            padding : 5px 7px;
-            display : inline-block;
-            cursor  : text;
-        }
-
-        label:hover {
-            padding       : 4px 6px;
-            border        : 1px solid #b6b3a6;
-            min-width     : 220px;
-            background    : #333;
-            border-radius : 3px;
-            color         : #adabac;
-
-        }
-
-        .graph {
-            margin        : 0 3px 3px 0;
-            padding       : 3px;
-            height        : 200px;
-            border        : 3px solid #b6b3a6;
-            border-radius : 4px;
-            background    : #000;
-            overflow      : hidden;
-            clear         : both;
-        }
-    }
-
-    .alerts-output {
-        padding : 3px;
-        float   : right;
-        width   : 32%;
-
-        .output-view {
-            margin     : 0;
-            min-height : 135px;
-            width      : 97%;
-        }
-    }
-
-    .alerts-history {
-        color      : #f5f4ed;
-        min-height : 133px;
-
-        ul {
-            margin        : 0;
-            padding       : 3px;
-            overflow      : auto;
-            min-height    : 133px;
-            border        : 3px solid #b6b3a6;
-            border-radius : 4px;
-            background    : #373737;
-        }
-
-        li {
-            margin-bottom : 26px;
-            position : relative;
-        }
-
-        button {
-            margin-top : 4px;
-            position: absolute;
-            top : 0;
-            right : 0;
-
-        }
-
-        h1 {
-            margin         : 0;
-            line-height    : 30px;
-
-            .proxima-regular(16px);
-        }
-
-        h2,
-        p {
-            margin         : 0;
-            line-height    : 16px;
-
-            .proxima-regular(12px);
-        }
-
-        label {
-            background-image: url("/public/img/alerts_icon.png");
-            background-repeat: no-repeat;
-            text-indent: 25px;
-        }
-    }
+    /* expanded/edit styles */
+    @import "expandedmonitor.less";
 
 
     /* tab styles */
@@ -1215,143 +1107,8 @@ hr {
         }
     }
 
-    /* application styles */
-    .ecosystem-application-wrap {
-        z-index  : 1;       /* extremely important, for some reason
-                               the monitor wrap is covering application
-                               wrap when a transition takes place in chrome */
-        position : relative;
-        -webkit-perspective : 0px;
-           -moz-perspective : 0px;
-             -o-perspective : 0px;
-                perspective : 0px;
-
-
-        .application-tile {
-            margin        : 0 0 20px 20px;
-            float         : left;
-            width         : 200px;
-            height        : 200px;
-            cursor        : pointer;
-            border-radius : 4px;
-
-            -webkit-transition       : -webkit-transform 1s;
-               -moz-transition       :    -moz-transform 1s;
-                 -o-transition       :      -o-transform 1s;
-                    transition       :         transform 1s;
-            -webkit-transform-style  : preserve-3d;
-               -moz-transform-style  : preserve-3d;
-                 -o-transform-style  : preserve-3d;
-                    transform-style  : preserve-3d;
-            -webkit-transform-origin : right center;
-               -moz-transform-origin : right center;
-                 -o-transform-origin : right center;
-                    transform-origin : right center;
-        }
-
-        .application-tile.flipped {
-            .transform(translateX( -100% ) rotateY( -180deg ));
-        }
-
-        .application-tile figure {
-            margin        : 0;
-            display       : block;
-            height        : 100%;
-            width         : 100%;
-            border-radius : 4px;
-            position      : absolute;
-
-            -webkit-backface-visibility : hidden;
-               -moz-backface-visibility : hidden;
-                 -o-backface-visibility : hidden;
-                    backface-visibility : hidden;
-        }
-
-        .application-tile .front {
-            background : #545954;
-
-            p {
-              line-height    : 40px;
-              text-align     : center;
-              color          : #fff;
-              text-transform : uppercase;
-
-              .proxima-regular(18px);
-            }
-
-            fieldset {
-                margin     : 0;
-                position   : absolute;
-                bottom     : 0;
-                width      : 100%;
-                float      : right;
-                opacity    : 0;
-
-                -webkit-transition : opacity 0.3s ease-in-out;
-                   -moz-transition : opacity 0.3s ease-in-out;
-                        transition : opacity 0.3s ease-in-out;
-
-                .btn-wrap {
-                position : absolute;
-                bottom   : 0;
-                right    : 0;
-                width    : 100%;
-              }
-
-              button {
-                margin-bottom : 5px;
-                margin-right  : 5px;
-                float         : right;
-              }
-            }
-        }
-
-        .application-tile .front:hover {
-            fieldset {
-              opacity : 1;
-            }
-        }
-
-        .application-tile .back {
-            background : #f5f4ee;
-            .transform(rotateY( 180deg ));
-
-            fieldset {
-                margin : 5px;
-
-                input {
-                    width : 176px;
-                }
-
-                .btn-wrap {
-                    position : absolute;
-                    bottom   : 0;
-                    right    : 0;
-                    width    : 100%;
-                }
-
-                button {
-                    margin-bottom : 5px;
-                    margin-right  : 5px;
-                    float         : right;
-                }
-            }
-        }
-
-        .application-tile.flipped .front,
-        .application-tile.flipped .front:hover {
-            button {
-              visibility : hidden;
-              opacity : 0;
-            }
-        }
-
-        .application-tile.red {
-            .front {
-                background : #735854;
-            }
-        }
-    }
+    /* ecosystem styles (application tiles, etc.) */
+    @import "ecosystem.less";
 
     /* delete monitor styles */
     .delete-monitor {
@@ -1369,54 +1126,10 @@ hr {
                 width : 98%;
             }
         }
-
     }
 
-    /* bootstrap alert styles */
-    .alert-wrap {
-        top         : -100px;
-        height      : auto;
-        left        : 0;
-        margin-top  : 0;
-        margin-left : 0;
-        display     : block;
-        position    : fixed;
-        width       : 100% !important;
-        z-index     : 1058;
-
-        -webkit-transition: all 1s;
-        .transition-duration(1s);
-    }
-
-    .alert-wrap.active {
-        .transform(translateY(150px)) !important;
-    }
-
-    .alert {
-        text-align       : center;
-        margin           : 0 25%;
-        border-radius    : 4px !important;
-        border           : none !important;
-        background-color : rgba(0,0,0,0.7) !important;
-        color            : #efc338 !important;
-        text-shadow      : none;
-        line-height      : 30px;
-
-        .proxima-regular(17px);
-    }
-
-    .alert-error {
-        color         : #cc3e3a !important;
-    }
-
-    .alert-success {
-        color         : #6ea933 !important;
-
-        .close {
-            color   : #6ea933 !important;
-            opacity : 0.7 !important;
-        }
-    }
+    /* rearview system alert styles */
+    @import "alert.less";
 
     /* bootstrap form overrides */
     textarea:focus,

@@ -1,15 +1,15 @@
 package rearview.dao
 
 import java.util.Date
-import play.api.Logger
 import play.api.libs.json._
-import rearview.Global.{ database, slickDriver }
-import rearview.model.ModelImplicits._
+import rearview.Global.{database, slickDriver}
 import rearview.model._
+import rearview.model.Constants._
+import rearview.model.ModelImplicits._
 import rearview.util.slick.MapperImplicits._
-import scala.slick.direct.AnnotationMapper.column
 import scala.slick.lifted.BaseTypeMapper
 import rearview.model.JobStatus
+import org.joda.time._
 
 /**
  * Data access layer for Job objects.
@@ -75,12 +75,23 @@ object JobDAO {
   /**
    * Column to attibute mappings for the JobErrors class
    */
-  object JobErrors extends Table[JobError]("job_errors") {
+  object JobErrors extends Table[(Long, Long, Date, JobStatus, Option[String])]("job_errors") {
     def id        = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def jobId     = column[Long]("job_id")
     def createdAt = column[Date]("created")
     def message   = column[Option[String]]("message")
-    def *         = id ~ jobId ~ createdAt ~ message <> (JobError, JobError.unapply _)
+    def status    = column[JobStatus]("status")
+    def *         = id ~ jobId ~ createdAt ~ status ~ message
+  }
+
+  /**
+   * Column[Option[Date]] implicit to be able to use conditionals on options.
+   */
+  implicit class DateOptColumn(val column: Column[Option[Date]]) {
+    def ===(stringOpt: Option[Date]): Column[Option[Boolean]] = stringOpt match {
+      case Some(n) => column.is(stringOpt)
+      case       _ => column.isNull
+    }
   }
 
 
@@ -129,8 +140,8 @@ object JobDAO {
    * @param message
    * @return
    */
-  def storeError(jobId: Long, message: Option[String] = None): Int = database withSession { implicit session: Session =>
-    JobErrors.jobId ~ JobErrors.createdAt ~ JobErrors.message insert(jobId, new Date, message)
+  def storeError(jobId: Long, status: JobStatus, message: Option[String] = None, date: Date = new Date): Int = database withSession { implicit session: Session =>
+    JobErrors.jobId ~ JobErrors.createdAt ~ JobErrors.status ~ JobErrors.message insert(jobId, date, status, message)
   }
 
 
@@ -211,13 +222,65 @@ object JobDAO {
     }
   }
 
-
   /**
    * Return all errors by jobId
    * @param jobId
    * @return
    */
-  def findErrorsByJobId(jobId: Long, limit: Int = 25): Seq[JobError] = database withSession { implicit session: Session =>
-    Query(JobErrors) filter(_.jobId === jobId) sortBy (_.createdAt.desc) take(25) list
+  def findErrorsByJobId(jobId: Long, limit: Int = 50): Seq[JobError] = database withSession { implicit session: Session =>
+    foldErrorDurations(((for {
+      j <- Jobs if j.id === jobId
+      e <- JobErrors if j.deletedAt === None && e.jobId === j.id
+    } yield (e)) sortBy (_.createdAt.asc) take(limit) list) map { r =>
+      JobError(r._1, r._2, r._3, r._4, r._5)
+    })
+  }
+
+
+  /**
+   * Return all errors by application id
+   * @param jobId
+   * @return
+   */
+  def findErrorsByApplicationId(appId: Long, limit: Int = 250): Seq[JobError] = database withSession { implicit session: Session =>
+    foldErrorDurations(((for {
+      j <- Jobs if j.appId === appId
+      e <- JobErrors if j.deletedAt === None && e.jobId === j.id
+    } yield (e)) sortBy (_.createdAt.asc) take(limit) list) map { r =>
+      JobError(r._1, r._2, r._3, r._4, r._5)
+    })
+  }
+
+
+  /**
+   * Takes a list of errors, groups them into lists by jobId then transforms each list calculating the
+   * endDate for each error based on the time of the next success (or max timeout).
+   */
+  private def foldErrorDurations(errors: Seq[JobError]): Seq[JobError] = {
+    errors.groupBy(_.jobId).map { kv =>
+      val tmp = kv._2.foldLeft(List[JobError]()) { (acc, cur) =>
+        acc.lastOption match {
+          case Some(e) if(cur.status == SuccessStatus) =>
+            acc.dropRight(1) :+ e.copy(endDate = Some(cur.date)) :+ cur
+
+          case Some(e) if(e.status == SuccessStatus) =>
+            acc :+ cur
+
+          case Some(e) =>
+            acc
+
+          case None =>
+            acc :+ cur
+        }
+      }
+
+      // Check the last error. If it's failed status with no endDate, make it now or ERROR_TIMEOUT
+      val errors = (tmp.dropRight(1) ++ tmp.lastOption.map { error =>
+        List(error.copy(endDate = error.endDate.map(d => d).orElse(Some(new DateTime().toDate))))
+      }.getOrElse(Nil)).filterNot(_.status == SuccessStatus)
+
+      (kv._1, errors.reverse)
+
+    }.values.flatten.toList
   }
 }
