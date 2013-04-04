@@ -25,7 +25,6 @@ define([
         },
 
         subscriptions : {
-            //'view:dashboard:alert' : 'setAlertStatus',
             'view:dashboard:complete'  : 'render'
         },
 
@@ -49,7 +48,7 @@ define([
                 data   : {}
             });
 
-            self.$timeline = self.$el.find('.alert-timeline .accordion-inner');
+            self.$timeline  = self.$el.find('.alert-timeline .accordion-inner');
             self.$accordion = self.$el.find('.alert-timeline .accordion-body');
 
             self.setupAlertTimeline();
@@ -210,16 +209,16 @@ define([
             };
         },
 
-        destructor : function() {
+        destructor : function() { console.info('alerttimeline:destructor()');
             var self     = this,
                 parentEl = self.$el.prev();
 
-            Backbone.Mediator.unsubscribe('view:dashboard:alert', self.setAlertStatus, self);
-            Backbone.Mediator.unsubscribe('view:dashboard:init', self.addPopover, self);
+            // unsubscribe from mediator channels
+            self.destroySubscriptions();
 
             self.remove();
             self.unbind();
-            self.monitors = [];
+            self.off();
 
             self.$el.empty();
 

@@ -71,9 +71,6 @@ define([
                 'templar' : self.templar
             });
 
-            // check for an alert state after dashboard init
-            
-
             self.alertTimelineView = new AlertTimelineView({
                 'el'         : $('.timeline-wrap'),
                 'collection' : self.collection,
@@ -82,9 +79,6 @@ define([
                 'status'     : self.checkDashboardAlertState(),
                 'templar'    : self.templar
             });
-
-
-            
 
             Backbone.Mediator.pub('view:dashboard:init');
         },
@@ -175,7 +169,6 @@ define([
                 'router'  : self.router
             });
 
-            // clean up nested views
             self.addMonitorView.destructor();
             var jobModel = new JobModel();
             self.addMonitorView = new AddMonitorView({
@@ -183,6 +176,16 @@ define([
                 'user'    : self.user,
                 'appId'   : self.appId,
                 'templar' : self.templar
+            });
+
+            self.alertTimelineView.destructor();
+            self.alertTimelineView = new AlertTimelineView({
+                'el'         : $('.timeline-wrap'),
+                'collection' : self.collection,
+                'appId'      : self.appId,
+                'user'       : self.user,
+                'status'     : self.checkDashboardAlertState(),
+                'templar'    : self.templar
             });
 
             // init monitors
@@ -314,13 +317,7 @@ define([
             self.collection.off('remove', self.reinitializeDash, self);
 
             // unsubscribe from mediator channels
-            Backbone.Mediator.unsubscribe('view:smallmonitor:edit', self.editMonitor, self);
-            Backbone.Mediator.unsubscribe('view:editmonitor:open', self.hideDash, self);
-            Backbone.Mediator.unsubscribe('view:editmonitor:exit', self.showDash, self);
-            Backbone.Mediator.unsubscribe('view:editmonitor:save', self.updateDash, self);
-            Backbone.Mediator.unsubscribe('view:addmonitor:close', self.showDash, self);
-            Backbone.Mediator.unsubscribe('view:addmonitor:show', self.hideDash, self);
-            Backbone.Mediator.unsubscribe('view:addmonitor:save', self.updateDash, self);
+            self.destroySubscriptions();
 
             // clean up edit/add monitor view
             self.editMonitorView.destructor();

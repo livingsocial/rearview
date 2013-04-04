@@ -32,6 +32,16 @@ define([
             });
         },
         /**
+         * BaseView#destroySubscriptions()
+         **/
+        destroySubscriptions : function () {
+            var self = this;
+
+            for (sub in self.subscriptions) {
+                Backbone.Mediator.unsubscribe(sub, self[self.subscriptions[sub]], self);
+            }            
+        },
+        /**
          * BaseView#drawAsInfinite(key) -> Boolean|Null
          **/
         drawAsInfinite : function (key) {

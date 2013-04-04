@@ -27,7 +27,9 @@ define([
         },
 
         subscriptions : {
-            'view:alerttimeline:toggle' : 'setAlertTimelineHeightOffset'
+            'view:alerttimeline:toggle' : 'setAlertTimelineHeightOffset',
+            'view:dashboard:init'       : 'exit',
+            'view:deletemonitor:delete' : 'deleteMonitor'
         },
 
         initialize : function(options) {
@@ -52,8 +54,8 @@ define([
             $(window).resize(resize);
 
             // subscribe to dashboard change in order to exit current expanded monitor
-            Backbone.Mediator.sub('view:dashboard:init', self.exit, self);
-            Backbone.Mediator.sub('view:deletemonitor:delete', self.deleteMonitor, self);
+            // Backbone.Mediator.sub('view:dashboard:init', self.exit, self);
+            // Backbone.Mediator.sub('view:deletemonitor:delete', self.deleteMonitor, self);
         },
 
         render : function(id) {
@@ -211,8 +213,6 @@ define([
                 delay     : { show : 100, hide : 200 },
                 title     : $content
             });
-
-
         },
         /**
          * EditMonitorView#open()
@@ -437,12 +437,12 @@ define([
             // clean up nested views
             self.deleteMonitorView.destructor();
 
-            this.remove();
-            this.unbind();
+            // unsubscribe from mediator channels
+            self.destroySubscriptions();
 
-            Backbone.Mediator.unsubscribe('view:dashboard:init', self.exit, self);
-            Backbone.Mediator.unsubscribe('view:deletemonitor:delete', self.deleteMonitor, self);
-            Backbone.Mediator.unsubscribe('view:alerttimeline:show', self._setExpandedViewHeight, self);
+            self.remove();
+            self.unbind();
+            self.off();
 
             $prevSibling.after("<div class='edit-monitor-wrap clearfix'>");
         },
