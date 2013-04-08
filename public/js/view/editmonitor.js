@@ -188,6 +188,9 @@ define([
                 case 'graphite_metric_error' :
                     error = true;
                     break;
+                case 'security_error' :
+                    error = true;
+                    break;
             }
 
             return error;

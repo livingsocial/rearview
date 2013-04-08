@@ -265,10 +265,11 @@ object ModelImplicits {
     def writes(ts: TimeSeries) = JsArray(ts.map(outer => JsArray(outer.map(dataPointFormat.writes(_)))))
   }
 
-  implicit def jobToNamespace(job: Job): Map[String, Any] = {
-    Map("jobId"   -> job.id.getOrElse(-1),
-        "name"    -> job.name,
-        "minutes" -> job.minutes.getOrElse(Monitor.minutes))
+  implicit def jobToNamespace(job: Job): JsObject = {
+    JsObject(Seq(
+        "jobId"   -> JsNumber(job.id.getOrElse(-1L).toLong),
+        "name"    -> JsString(job.name),
+        "minutes" -> JsNumber(job.minutes.getOrElse(Monitor.minutes).toInt)))
   }
 
   implicit def timeSeriesToJson(series: TimeSeries): JsValue = TimeSeriesFormat.writes(series)

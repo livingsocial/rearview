@@ -49,7 +49,7 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         puts @timeseries.length
         puts @a.values.length
         """
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
     }
 
@@ -58,7 +58,7 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         """
         raise "Incorrect variable generation for timeseries length = #{@timeseries.length}" if @timeseries.length != 1
         """
-      val result = Monitor.evalExpr(artifact3, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact3, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
     }
 
@@ -68,7 +68,7 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         raise "Custom failure message count = #{total}"
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === FailedStatus
       result.message === Some("Custom failure message count = 51.0")
     }
@@ -81,7 +81,7 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         raise "Total should be greater than 0" if !(total > 0)
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
     }
 
@@ -94,7 +94,7 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         raise "Total should be greater than 0" if !(total > 0)
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
     }
 
@@ -108,7 +108,7 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         raise "Total should be greater than 0" if !(total > 0)
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
       val expected = Json.parse("""[[1338842370,7.0],[1338842380,10.0],[1338842390,12.0],[1338842400,12.0],[1338842410,10.0]]""")
       (result.output.graphData \ "x") === expected
@@ -121,7 +121,7 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         end
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
       val expected = Json.parse("""[[1338842370,null],[1338842380,null],[1338842390,null],[1338842400,null],[1338842410,null]]""")
       (result.output.graphData \ "x") === expected
@@ -132,12 +132,13 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         puts "foo"
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
       result.output.graphData !== JsObject(Nil)
     }
 
     "supports anovaF function" in {
+      skipped("unimplemented")
       val monitorExpr   = """
         a = [1, 2, 3, 4, 5]
         b = [2, 2, 1, 4, 1]
@@ -145,29 +146,31 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         anovaF(a, b, c)
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
     }
 
     "supports anovaP function" in {
+      skipped("unimplemented")
       val monitorExpr   = """
         a = [1, 2, 3, 4, 5]
         b = [2, 2, 1, 4, 1]
         anovaP(a, b)
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
     }
 
     "supports anovaTest function" in {
+      skipped("unimplemented")
       val monitorExpr   = """
         a = [1, 2, 3, 4, 5]
         b = [2, 2, 1, 4, 1]
         anovaTest(0.5, a, b)
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map(), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(Nil), true)
       result.status === SuccessStatus
     }
 
@@ -176,7 +179,7 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         raise "name = #{@name}"
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map("name" -> "foo"), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(("name" -> JsString("foo")) :: Nil), true)
       result.status === FailedStatus
       result.message === Some("name = foo")
     }
@@ -186,12 +189,12 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
         raise "@minutes failed" if @minutes != 1
       """
 
-      val result = Monitor.evalExpr(artifact, Some(monitorExpr), Map("minutes" -> 1), true)
+      val result = Monitor.eval(artifact, Some(monitorExpr), JsObject(("minutes" -> JsNumber(1)) :: Nil), true)
       result.status === SuccessStatus
     }
 
     "supports empty expression" in {
-      val result = Monitor.evalExpr(artifact, None, Map(), true)
+      val result = Monitor.eval(artifact, None, JsObject(Nil), true)
       result.status === SuccessStatus
     }
   }

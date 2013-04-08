@@ -15,7 +15,7 @@ Monitors define the following attributes:
 The monitor workflow is as follows:
 
     -----------      ----------      --------------      -----sandbox----      --------
-    |scheduler| ---> |load job| ---> |graphite API| ---> | JRuby/monitor| ---> |alerts|
+    |scheduler| ---> |load job| ---> |graphite API| ---> | Ruby/monitor| ---> |alerts|
     -----------      ----------      --------------      ----------------  |   --------
         ^                                                                  |
         |                                                                  |
@@ -25,7 +25,7 @@ The monitor workflow is as follows:
  1. Job is loaded from the database
  1. Server fetches the metrics from Graphite (note monitors can't do I/O other than puts)
  1. Metric data is transformed into data structures for Ruby
- 1. JRuby eval run in a sandbox with the metric data in scope
+ 1. MRI SAFE mode processes are forked to execute the logic
  1. Monitor optionally raises an exception to indicate a failure based on the data
  1. Any configured PagerDuty or Email alerts are sent
  1. Job is re-scheduled
@@ -119,7 +119,7 @@ representation of @timeseries variable for the above example on 1 minute's worth
 
 Notice there are two array entries in *@timeseries*, which correspond to the variables *@a* and *@b*.
 
-By default the label for each metric is set to the *alias* for a given timeseries. If an *alias* is not specified, 
+By default the label for each metric is set to the *alias* for a given timeseries. If an *alias* is not specified,
 the default value will match the exact string used in the metric field. Optionally, you can set the label manually
 within the monitor like this:
 

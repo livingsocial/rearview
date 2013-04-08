@@ -141,7 +141,7 @@ trait JobsController extends Controller with Security {
 
   private def verifyJob(job: Job): Future[Either[String, Boolean]] = {
     import job._
-    Monitor(metrics, monitorExpr, minutes, Map(), true) map { r =>
+    Monitor(metrics, monitorExpr, minutes, JsObject(Nil), true) map { r =>
       r match {
           case result if(result.status != SecurityErrorStatus) => Right(true)
           case result                                          => Left(result.output.output)

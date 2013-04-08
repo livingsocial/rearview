@@ -1,9 +1,0 @@
-To allow scripts in the jruby package to be run with gems resolved, a jar must be built which
-contains gem file structure and inserted into the classpath.
-
-To update lib/ruby-gems.jar perform the following steps:
-
- - Edit ./jruby/Gemfile adding whatever gems you need
- - Run the package script: ./jruby/update-gems.sh
-
- The lib/ruby-gems.jar file should now be updated with the latest gems.

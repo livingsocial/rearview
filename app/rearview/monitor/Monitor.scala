@@ -1,36 +1,44 @@
 package rearview.monitor
-
-import java.io.{StringWriter, Writer}
-import java.lang.Object
+import akka.util.Timeout
+import java.io.File
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
+import java.util.concurrent.TimeUnit
+import org.apache.commons.io.IOUtils
 import org.joda.time.DateTime
-import org.jruby.RubyArray
-import org.jruby.RubyFixnum
-import org.jruby.RubyFloat
-import org.jruby.RubyHash
 import play.api.Logger
 import play.api.http.Status
 import play.api.libs.json._
 import rearview.Global
 import rearview.graphite._
-import rearview.model.ModelImplicits._
 import rearview.model._
-import rearview.util.JRubyUtils._
-import scala.Array.canBuildFrom
+import rearview.model.ModelImplicits._
 import scala.collection.JavaConversions._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import org.jruby.Ruby
-import org.jruby.RubyNil
-import org.jruby.RubyString
-import org.jruby.RubyNumeric
-import org.jruby.embed.ScriptingContainer
-import org.jruby.RubyObject
-
-class MonitorException(e: String) extends Exception(e)
+import scala.io.Source
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
+import scala.concurrent.duration.Duration
+import scala.concurrent.Await
+import scala.util.Try
+import scala.util.Failure
+import scala.util.Success
 
 object Monitor {
   val minutes = 60
+
+  implicit val timeout = Timeout(30, TimeUnit.SECONDS)
+
+  lazy val monitorScript = {
+    val src = Source.fromInputStream(Monitor.getClass().getClassLoader().getResourceAsStream(Global.rubyScript))
+    src.getLines.reduceLeft(_ + "\n" + _)
+  }
+  lazy val utilitiesScript = {
+    val src = Source.fromInputStream(Monitor.getClass().getClassLoader().getResourceAsStream("ruby/utilities.rb"))
+    src.getLines.reduceLeft(_ + "\n" + _)
+  }
+
 
   /**
    * Factory to create a Monitor instance in s static context
@@ -38,12 +46,17 @@ object Monitor {
   def apply(metrics:     Seq[String],
             monitorExpr: Option[String],
             minutes:     Option[Int] = None,
-            namespace:   Map[String, Any] = Map(),
+            namespace:   JsObject = JsObject(Nil),
             verbose:     Boolean = false,
             toDate:      Option[String] = None)(implicit client: ConfigurableHttpClient): Future[AnalysisResult] = {
     fetchData(metrics, minutes, toDate) map {
-      case Right(data) => Monitor.evalExpr(data, monitorExpr, namespace + ("minutes" -> minutes.getOrElse(Monitor.minutes)), verbose)
-      case Left(e)     => handleError(e)
+      case Right(data) =>
+        val minutesSeq = Seq(("minutes", JsNumber(minutes.getOrElse(Monitor.minutes).toInt)))
+        val ns = JsObject(namespace.fields ++ minutesSeq)
+        Monitor.eval(data, monitorExpr,  ns, verbose)
+
+      case Left(e) =>
+        handleError(e)
     } recover {
       case e: Throwable =>
         Logger.error("Monitor failure " + e.getMessage)
@@ -95,79 +108,92 @@ object Monitor {
    * metrics used for the monitor.  Additionally some helper functions are in scope for graphing, performing
    * statistics functions, etc.
    */
-  def evalExpr(data:        TimeSeries,
-               monitorExpr: Option[String],
-               namespace:   Map[String, Any] = Map(),
-               verbose:     Boolean = false): AnalysisResult = {
-
-    val writer = new StringWriter // StringWriter does not need to be closed explicitly.
+  def eval(data:        TimeSeries,
+           monitorExpr: Option[String],
+           initialNS:   JsObject = JsObject(Nil),
+           verbose:     Boolean = false): AnalysisResult = {
 
     // Creates script container and local namespace for evaluation
-    val (container, wrapper) = initializeRuntime(writer, data, namespace)
+    val namespace = createNamespace(data, initialNS)
 
-    // All variables must be re-set into the JRuby container on each eval
-    val result = try {
-      // Call JRuby eval on the monitor expression, within the wrapper context
-      container.eval[Object](wrapper, monitorExpr.getOrElse("")) match {
-        case h: RubyHash =>
-          // Transform the graph data to JSON to be sent to the client
-          val graphData = Option(h.get("graph_data")).map(gd => graphDataToJson(gd, data)).getOrElse(JsObject(Nil))
+    // Run the monitor in an external process
+    val result = execProcess(monitorExpr, namespace)
 
-          Option(h.get("status")).map { s =>
-            s match {
-              case "failed" => (FailedStatus, graphData, Option(h.get("output")).map(_.toString))
-              case _        => (SuccessStatus, graphData, None)
-            }
-          }.getOrElse((FailedStatus, JsObject(Nil), Some("Unexpected result from eval wrapper")))
-
-        case o => throw new Exception(s"Expected RubyHash, got ${o.getClass}")
-      }
-    } catch {
-      case e: Exception if e.getCause.isInstanceOf[SecurityException] =>
-        Logger.error("SecurityException", e)
-        writer.append(e.getMessage())
-        (SecurityErrorStatus, JsObject(Nil), Some(e.getMessage()))
-
-      case e: Throwable =>
-        Logger.error("Failed to evaluate JRuby", e)
-        writer.append(e.getMessage())
-        (ErrorStatus, JsObject(Nil), Some(e.getMessage()))
+    // Transform the graph data to JSON to be sent to the client
+    val graphData = result \ "graph_data" match {
+      case JsObject(Nil) => generateDefaultGraphData(data)
+      case JsNull        => generateDefaultGraphData(data)
+      case gd            => gd
     }
+    val output    = (result \ "output").as[String]
+    val errorMsg  = (result \ "error").asOpt[String]
 
-    val output = writer.toString
     Logger.debug(output)
 
-    val raw = MonitorOutput(result._1, output, result._2)
+    val status = errorMsg match {
+      case Some(msg) if(msg.contains("Timeout Error"))      => SecurityErrorStatus
+      case Some(msg) if(msg.contains("Insecure operation")) => SecurityErrorStatus
+      case Some(msg)                                        => FailedStatus
+      case _                                                => SuccessStatus
+    }
 
-    AnalysisResult(result._1, raw, result._3, data)
+    val raw = MonitorOutput(status, output, graphData)
+    AnalysisResult(status, raw, errorMsg, data)
   }
 
 
   /**
-   * Creates the JRuby ScriptingContainer and a namespace for Ruby expressions to be evaluated within.
+   * Handles spawning an MRI process to run the monitor.
    */
-  def initializeRuntime(writer: Writer, data: TimeSeries, preDefNS: Map[String, Any]) = {
-    val container = JRubyContainerCache.get
-    container.setWriter(writer)
-    container.setErrorWriter(writer)
+  def execProcess(expr: Option[String], namespace: JsValue): JsValue = {
 
-    // Convert all variable mappings to (String, Any) in prep to build map
-    val preDefs = preDefNS.map { kv =>
-      ("@" + kv._1) -> kv._2
+    val script  = monitorScript.format(utilitiesScript, expr.getOrElse(""), Global.sandboxTimeout, Json.stringify(namespace))
+    val process = new ProcessBuilder(List(Global.rubyExe)).redirectErrorStream(true).start
+    val os      = process.getOutputStream()
+    val is      = process.getInputStream()
+
+    // Pass the script via Ruby's STDIN
+    IOUtils.write(script, os)
+    IOUtils.closeQuietly(os)
+
+    val f = Future {
+      process.waitFor()
     }
 
-    // Create a RubyHash (using implicit JRuby Java conversion logic
-    val timeseries = createTimeseries(container, data)
+    Try {
+      Await.result(f, Duration(Global.sandboxTimeout, "second"))
+    } match {
+      case Success(exitValue) if(exitValue == 0) =>
+        val output = new String(IOUtils.toByteArray(is))
+
+        Try {
+          Json.parse(output)
+        } match {
+          case Success(json) => json
+          case Failure(e)    => JsObject(Seq("graph_data" -> JsNull, "output" -> JsString(output), "error" -> JsString(e.getMessage())))
+        }
+
+      case Success(exitValue) =>
+        val output = new String(IOUtils.toByteArray(is))
+        JsObject(Seq("graph_data" -> JsNull, "output" -> JsString(output), "error" -> JsString(output)))
+
+      case Failure(e) =>
+        Logger.error("Problem executing process", e)
+        process.destroy()
+        JsObject(Seq("graph_data" -> JsNull, "output" -> JsString("Timeout Error"), "error" -> JsString("Timeout Error")))
+    }
+  }
+
+
+  /**
+   * Creates the JRuby ScriptingContainer and a namespace for Ruby expressions to be evaluated in
+   */
+  def createNamespace(data: TimeSeries, initialNS: JsObject): JsObject = {
+    // Create a JsValue
+    val timeseries = createTimeseries(data)
 
     // Build the namespace with all the prepped tuples above
-    val namespace =
-      "@timeseries" -> timeseries ::
-      Nil ++ preDefs
-
-    // Create a new class instance to run expressions within
-    val wrapper = instantiateWrapper(container, writer, Map(namespace : _*))
-
-    (container, wrapper)
+    JsObject(Seq(("@timeseries", timeseries)) ++ initialNS.fields.map(kv => ("@" + kv._1, kv._2)))
   }
 
 
@@ -198,49 +224,22 @@ object Monitor {
   /**
    * Map the TimeSeries object to a an array of TimeSeries objects defined in monitor.rb.
    */
-  def createTimeseries(container: ScriptingContainer, data: TimeSeries) = {
-    seqAsJavaList(data map { series =>
-      seqAsJavaList(series map { dp =>
-        // null -> Nil in JRuby
-        mapAsJavaMap(Map("metric" -> dp.metric, "timestamp" -> dp.timestamp, "value" -> dp.value.getOrElse(null)))
-      } dropRight(1))
-    })
+  def createTimeseries(data: TimeSeries): JsValue = {
+    data map { series =>
+      series.dropRight(1)
+    }
   }
 
+
   /**
-   * Handles serializing a Ruby GraphData object to Json.  GraphData is assumed to
-   * be a Ruby hash of strings and doubles.  Convert RubyHash to JsObject.  We no longer
-   * use to_json since it seemed to intermittently fail in tests.
+   *  Generates the JsObject representing the default graph data for the timeseries.
+   *  This entails an object with fields corresponding to the metric name and an array
+   *  of pairs for the timestamp/value.
    */
-  def graphDataToJson(o: Object, data: TimeSeries): JsValue = o match {
-    case h: RubyHash if(!h.isEmpty) =>
-      val l = h.keySet() map { key =>
-        val data = JsArray(h.get(key) match {
-          case a: RubyArray =>
-            a.getList() map { pair =>
-              pair match {
-                case b: RubyArray =>
-                  val l = b.getList()
-                  val (ts, value) = (JsNumber(l(0).asInstanceOf[RubyFixnum].getLongValue()), l(1))
-
-                  if(value.getClass() == classOf[RubyFloat])
-                    JsArray(Seq(ts, JsNumber(value.asInstanceOf[RubyFloat].getDoubleValue())))
-                  else
-                    JsArray(Seq(ts, JsNull))
-
-                case _ =>
-                  JsArray(Nil)
-              }
-            }
-          case _ => Nil
-        })
-        (key.toString -> data)
-      }
-
-      JsObject(l.toSeq)
-
-    case o =>
-      JsObject(Nil)
+  def generateDefaultGraphData(data: TimeSeries): JsValue = {
+    JsObject(data map { ts =>
+      (ts.head.metric, JsArray(ts.map(dp => JsArray(List(JsNumber(dp.timestamp), dp.value.map(JsNumber(_)).getOrElse(JsNull))))))
+    })
   }
 
 

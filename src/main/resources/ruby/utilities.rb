@@ -1,10 +1,6 @@
 #
 # Add re-usable code/functions in this module
 #
-require 'java'
-
-java_import org.apache.commons.math.stat.inference.TestUtils
-
 class Array
   def mean
     self.sum / self.length
@@ -36,22 +32,22 @@ end
 
 
 module MonitorUtilities
-  def anovaF(*metrics)
-    data = metrics.map { |m| m.to_java(:double) }
-    TestUtils.oneWayAnovaFValue(data)
-  end
+  # def anovaF(*metrics)
+  #   data = metrics.map { |m| m.to_java(:double) }
+  #   TestUtils.oneWayAnovaFValue(data)
+  # end
 
 
-  def anovaP(*metrics)
-    data = metrics.map { |m| m.to_java(:double) }
-    TestUtils.oneWayAnovaPValue(data)
-  end
+  # def anovaP(*metrics)
+  #   data = metrics.map { |m| m.to_java(:double) }
+  #   TestUtils.oneWayAnovaPValue(data)
+  # end
 
 
-  def anovaTest(alpha, *metrics)
-    data = metrics.map { |m| m.to_java(:double) }
-    TestUtils.oneWayAnovaTest(data, alpha)
-  end
+  # def anovaTest(alpha, *metrics)
+  #   data = metrics.map { |m| m.to_java(:double) }
+  #   TestUtils.oneWayAnovaTest(data, alpha)
+  # end
 
 
   def deploy_check(num_points, deploy, metric)

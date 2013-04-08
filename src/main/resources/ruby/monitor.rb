@@ -3,8 +3,10 @@
 # and monitor functionality.
 #
 
-require 'timeout'
-require 'utilities'
+require 'json'
+require 'stringio'
+# insert utilities here
+%s
 
 class Metric
   attr_reader :timestamp, :value
@@ -50,20 +52,10 @@ end
 class Scoped
   include MonitorUtilities
 
-  attr_reader :graph_data
-
-  def initialize(writer)
+  def initialize(timeout)
     @graph_data         = {}
     @graph_data.default = [] # make the default value an empty array
-    @writer             = writer
-  end
-
-  def puts(s)
-    @writer.append(s.to_s + "\n")
-  end
-
-  def p(s)
-    @writer.append(s.to_s + "\n")
+    @timeout            = timeout
   end
 
   def graph_value(name, timestamp, value)
@@ -86,14 +78,7 @@ class Scoped
     end
   end
 
-  def generate_default_graph_data
-    data = @timeseries.map { |ts|
-      [ts.label, ts.entries.map { |e| [e.timestamp, e.value] } ]
-    }
-    @graph_data.merge!(Hash[data])
-  end
-
-  def scoped_eval(expression, namespace, timeout)
+  def scoped_eval(namespace)
     # Copy instance variables from top-level class into current scope
     namespace.keys.each do |v|
       instance_variable_set "#{v}".to_sym, namespace[v]
@@ -104,37 +89,43 @@ class Scoped
       "[ #{self.join ", "} ]"
     end
 
-    begin
-      instance_eval <<-EOF
-        Timeout::timeout(#{timeout}) {
-          graph_value = lambda { |name, timestamp, value| graph_value(name, timestamp, value) }
-          #{expression}
-          nil
-        }
-      EOF
-      { "status" => "success", "graph_data" => @graph_data, "output" => "" }
-    rescue Timeout::Error => e
-      raise java.lang.SecurityException.new(e.to_s)
-    rescue RuntimeError => e
-      puts e.message
-      { "status" => "failed", "graph_data" => @graph_data, "output" => e.message }
-    ensure
-      generate_default_graph_data if @graph_data.empty?
+    out = StringIO.new
+
+    t = Thread.start do
+      $stdout = out
+      $SAFE=3
+      begin
+        graph_value = lambda { |name, timestamp, value| graph_value(name, timestamp, value) }
+        # This is the eval expression for the monitor
+        %s
+      rescue RuntimeError => e
+        out.write e
+        @error = e.to_s
+      end
     end
+
+    t.abort_on_exception = false
+
+    begin
+      t.join(@timeout)
+    rescue => e
+      out.write e
+      @error = e.to_s
+    ensure
+      $SAFE = 0
+      $stdout = STDOUT
+      $stderr = STDERR
+    end
+
+    { :graph_data => @graph_data, :output => out.string, :error => @error}.to_json
   end
 end
 
 
 class Wrapper
-  def initialize(timeout, writer, namespace)
-    @namespace = namespace
-    @timeout   = timeout
-    @writer    = writer
-  end
-
-  def create_timeseries(java_ts)
+  def create_timeseries(ts)
     ns   = {}
-    ts   = java_ts.to_a.map { |t| TimeSeries.new(t) }
+    ts   = ts.to_a.map { |t| TimeSeries.new(t) }
     vars = (0...ts.length).map do |i|
       varname = variable_by_offset(i)
       ns["@#{varname}"] = ts[i]
@@ -155,13 +146,16 @@ class Wrapper
 
 
   # Binding needs to be relative to the class, NOT top level
-  def secure_eval(expression)
-    scoped = Scoped.new(@writer)
-    @graph_data = scoped.graph_data #lame
-    ts = create_timeseries(@namespace.to_hash.delete "@timeseries")
-    ns = @namespace.to_hash.merge(ts)
-    scoped.scoped_eval(expression, ns, @timeout)
+  def secure_eval(namespace)
+    scoped = Scoped.new(%s)
+    ts = create_timeseries(namespace.to_hash.delete "@timeseries")
+    ns = namespace.to_hash.merge(ts)
+    puts scoped.scoped_eval(ns)
   end
 end
 
-Wrapper.new timeout, writer, namespace
+json = <<-'EOF'
+%s
+EOF
+
+Wrapper.new.secure_eval(JSON.parse(json))
