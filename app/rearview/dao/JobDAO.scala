@@ -231,7 +231,7 @@ object JobDAO {
     foldErrorDurations(((for {
       j <- Jobs if j.id === jobId
       e <- JobErrors if j.deletedAt === None && e.jobId === j.id
-    } yield (e)) sortBy (_.createdAt.asc) take(limit) list) map { r =>
+    } yield (e)) sortBy (_.createdAt.desc) take(limit) list) map { r =>
       JobError(r._1, r._2, r._3, r._4, r._5)
     })
   }
@@ -246,7 +246,7 @@ object JobDAO {
     foldErrorDurations(((for {
       j <- Jobs if j.appId === appId
       e <- JobErrors if j.deletedAt === None && e.jobId === j.id
-    } yield (e)) sortBy (_.createdAt.asc) take(limit) list) map { r =>
+    } yield (e)) sortBy (_.createdAt.desc) take(limit) list) map { r =>
       JobError(r._1, r._2, r._3, r._4, r._5)
     })
   }
@@ -257,7 +257,7 @@ object JobDAO {
    * endDate for each error based on the time of the next success (or max timeout).
    */
   private def foldErrorDurations(errors: Seq[JobError]): Seq[JobError] = {
-    errors.groupBy(_.jobId).map { kv =>
+    errors.reverse.groupBy(_.jobId).map { kv =>
       val tmp = kv._2.foldLeft(List[JobError]()) { (acc, cur) =>
         acc.lastOption match {
           case Some(e) if(cur.status == SuccessStatus) =>

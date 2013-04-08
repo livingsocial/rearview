@@ -209,7 +209,6 @@ class JobDAOSpec extends Specification with MatchersImplicits {
       savedJob.flatMap(j => JobDAO.findById(j.id.get).map(_.errorTimeout)) === Some(120)
     }
 
-
     "filter errors for deleted jobs" in jobContext { monitorJob: Job =>
       val savedJob = JobDAO.store(monitorJob.copy(deletedAt = Some(new Date))).get
       savedJob.id must beSome
@@ -222,7 +221,6 @@ class JobDAOSpec extends Specification with MatchersImplicits {
 
       JobDAO.findErrorsByJobId(savedJob.id.get).length === 0
     }
-
 
     "calculate error duration" in jobContext { monitorJob: Job =>
       val savedJob = JobDAO.store(monitorJob).get
@@ -307,5 +305,19 @@ class JobDAOSpec extends Specification with MatchersImplicits {
       JobDAO.findErrorsByApplicationId(savedJob.appId).length === 1
     }
 
+    "find errors byId limit 1" in jobContext { monitorJob: Job =>
+      val initialDate = new DateTime().minusMinutes(30)
+      val savedJobOpt = JobDAO.store(monitorJob)
+      savedJobOpt.flatMap(_.id) must beSome
+
+      val savedJob = savedJobOpt.get
+      val msg = "This is an error message"
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.toDate)
+      JobDAO.storeError(savedJob.id.get, SuccessStatus, None, initialDate.plusMinutes(2).toDate)
+      JobDAO.storeError(savedJob.id.get, FailedStatus, Some(msg), initialDate.plusMinutes(5).toDate)
+
+      // Should get back just the most recent failed
+      JobDAO.findErrorsByJobId(savedJob.id.get, 1).length === 1
+    }
   }
 }

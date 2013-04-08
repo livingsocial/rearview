@@ -39,18 +39,18 @@ trait Scheduled {
    * @return
    */
   def execute(job: Job): Future[Job] = {
-    Logger.info(s"Running job ${job.id.get}")
+    job.id map { jobId =>
+      Logger.info(s"Running job ${job.id.get}")
+      Statsd.increment("jobs.started")
+      Statsd.increment("job." + jobId + ".started")
 
-    val jobId = job.id.getOrElse(sys.error("job.id is not defined!"))
-    Statsd.increment("jobs.started")
-    Statsd.increment("job." + jobId + ".started")
+      import job._
 
-    import job._
-
-    // An implicit converts the job to a namespace (Map[String, Any])
-    Monitor(metrics, monitorExpr, minutes, job) map { result =>
-      handleResult(job, result)
-    }
+      // An implicit converts the job to a namespace (Map[String, Any])
+      Monitor(metrics, monitorExpr, minutes, job) map { result =>
+        handleResult(job, result)
+      }
+    } getOrElse(sys.error("job.id is not defined!"))
   }
 
 
@@ -92,19 +92,20 @@ trait Scheduled {
    */
   def sendAlerts(job: Job, status: JobStatus, result: AnalysisResult) {
     if(status != SuccessStatus) {
-      val jobId        = job.id.getOrElse(sys.error("job.id is not defined!"))
-      val lastErrorOpt = JobDAO.findErrorsByJobId(jobId, 1).headOption.map(_.date)
+      job.id.foreach { jobId =>
+        val lastErrorOpt = JobDAO.findErrorsByJobId(jobId, 1).headOption.map(_.date)
 
-      //Send an alert if we weren't already in an error state and the window for flapping is expired
-      val pastErrorTimeout = lastErrorOpt map { lastError =>
-        new DateTime().isAfter(new DateTime(lastError.getTime).plusMinutes(job.errorTimeout))
-      } getOrElse(true)
+        // Send an alert if we weren't already in an error state and the window for flapping is expired
+        val pastErrorTimeout = lastErrorOpt map { lastError =>
+          new DateTime().isAfter(new DateTime(lastError.getTime).plusMinutes(job.errorTimeout))
+        } getOrElse(false)
 
-      // If the last run job status was the first (not defined) or was success or past the timeout period
-      if(!job.status.isDefined || job.status == Some(SuccessStatus) || pastErrorTimeout) {
-        job.alertKeys.foreach { keys =>
-          alertClients foreach { client =>
-            client.send(job, result)
+        // If the last run job status was the first (not defined) or was success or past the timeout period
+        if(!job.status.isDefined || job.status == Some(SuccessStatus) || pastErrorTimeout) {
+          job.alertKeys.foreach { keys =>
+            alertClients foreach { client =>
+              client.send(job, result)
+            }
           }
         }
       }
