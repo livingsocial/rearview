@@ -125,6 +125,10 @@ Applications are containers for Jobs.  The following section defines the CRUD op
              <td class="description">Returns all the Jobs for the given <i>id</i></td>
          </tr>
          <tr>
+             <td class="resource">GET /applications/:id/errors</td>
+             <td class="description">Returns the errors for all jobs contained in the application.<i>id</i></td>
+         </tr>
+         <tr>
              <td class="resource">POST /applications</td>
              <td class="description">Creates an Application.</td>
          </tr>
