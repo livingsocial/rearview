@@ -26,9 +26,11 @@ object GraphiteParser extends JavaTokenParsers {
     try {
       lines.trim.split('\n') map { line =>
         parseLine(line.trim)
-      }
+      } filterNot { _.isEmpty }
     } catch {
-      case e: Exception => throw new GraphiteMetricException("Graphite parse error", e)
+      case e: Exception =>
+        e.printStackTrace()
+        throw new GraphiteMetricException("Graphite parse error", e)
     }
   }
 
@@ -38,11 +40,13 @@ object GraphiteParser extends JavaTokenParsers {
    * @return
    */
   def parseLine(line: String): Seq[DataPoint] = {
-    val Line = """(.*),(\d+),(\d+),(\d+)\|(.*)""".r
-    val Line(metric, start, end, interval, data) = line
+    if(!line.isEmpty()) {
+      val Line = """(.*),(\d+),(\d+),(\d+)\|(.*)""".r
+      val Line(metric, start, end, interval, data) = line
 
-    data.split(',').zipWithIndex.map { t =>
-      DataPoint(metric, start.toLong + (interval.toInt * t._2), allCatch opt (t._1.toDouble))
-    }
+      data.split(',').zipWithIndex.map { t =>
+        DataPoint(metric, start.toLong + (interval.toInt * t._2), allCatch opt (t._1.toDouble))
+      }
+    } else Nil
   }
 }

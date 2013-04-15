@@ -200,10 +200,10 @@ class MonitorSpec extends Specification with AroundExample with FutureMatchers {
   }
 
   "Monitor" should {
-    "Handle invalid metrics" in {
+    "Handle non-existent metrics" in {
       implicit val graphiteClient = new MockGraphiteClient(GraphiteResponse(200, "".getBytes))
       Monitor(Seq("stats_counts.cupcake.bogus"), Some("puts 'foo'")) must whenDelivered { result: AnalysisResult =>
-        result.status === GraphiteMetricErrorStatus
+        result.status === SuccessStatus
       }
     }
 

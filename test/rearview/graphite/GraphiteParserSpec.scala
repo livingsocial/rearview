@@ -24,5 +24,10 @@ class GraphiteParserSpec extends Specification {
       val data = GraphiteParser(nanPayload)
       data.length === 3
     }
+
+    "handle no data" in {
+      val data = GraphiteParser("")
+      data.length === 0
+    }
   }
 }
