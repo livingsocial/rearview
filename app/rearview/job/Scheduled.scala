@@ -33,6 +33,8 @@ trait Scheduled {
 
   def alertClients: Seq[Alert]
 
+  def alertOnErrors: Boolean
+
   /**
    * Main execution for a Job/monitor. Upon running the Monitor use the handleResults method to issue any alerts, etc.
    * @param job
@@ -91,7 +93,7 @@ trait Scheduled {
    * @param result
    */
   def sendAlerts(job: Job, status: JobStatus, result: AnalysisResult) {
-    if(status != SuccessStatus) {
+    if(status == FailedStatus || (alertOnErrors && status != SuccessStatus)) {
       job.id.foreach { jobId =>
         val lastErrorOpt = JobDAO.findErrorsByJobId(jobId, 1).headOption.map(_.date)
 
@@ -170,4 +172,5 @@ trait Scheduled {
 case object ScheduledJob extends Scheduled {
   implicit val graphiteClient = LiveGraphiteClient
   val alertClients            = Global.alertClients
+  val alertOnErrors           = Global.alertOnErrors
 }
