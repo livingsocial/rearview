@@ -79,8 +79,8 @@ class SchedulerSpec extends Specification with FutureMatchers with JobsControlle
     lazy val scheduledJobFactory = new Scheduled {
       override val runOnce     = true
       lazy val graphiteClient  = self.graphiteClient
-
       lazy val alertClients = List(pagerDutyAlert, emailAlert)
+      lazy val alertOnErrors = false
     }
   }
 

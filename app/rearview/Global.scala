@@ -30,6 +30,7 @@ object Global extends WithFilters(LoggingFilter) {
 
   lazy val accessLogging        = config.getBoolean("access_logging").getOrElse(false)
   lazy val alertClassNames      = config.getStringList("alert.class_names").map(_.toList).getOrElse(Nil)
+  lazy val alertOnErrors        = config.getBoolean("alert.on_errors").getOrElse(false)
   lazy val clusterInterfaces    = config.getString("cluster.interfaces").getOrElse("").split(',').map(_.trim).filterNot(_.isEmpty)
   lazy val clusterGroupName     = config.getString("cluster.groupName").getOrElse("rearview")
   lazy val emailFrom            = config.getString("email.from").getOrElse(exitMsg("email.from must be defined in configuration"))
