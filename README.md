@@ -214,6 +214,8 @@ TODO
   <tbody>
     <tr>
       <td>Steve Akers</td><td>Project Manager/Analytics Master</td><td><a href="https://twitter.com/SteveAkers">@SteveAkers</a></td><td><a href="https://github.com/steveakers">https://github.com/steveakers</a></td>
+    </tr>
+    <tr>
       <td>Trent Albright</td><td>Architect/Lead developer</td><td><a href="https://twitter.com/trent_albright">@trent_albright</a></td><td><a href="https://github.com/talbright">https://github.com/talbright</a></td>
     </tr>
     <tr>
