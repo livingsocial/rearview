@@ -196,46 +196,12 @@ Clone this repo:
 
     $ git clone git://github.com/livingsocial/rearview.git
 
-Create MySQL databases:
-
-    $ mysqladmin -u root create rearview
-    $ mysqladmin -u root create rearview_test
-
-
-Run the tests:
-
-    $ ./sbt test # Initially a boat load of Maven crap will download (one time affair).
-
-
-Start the server:
-
-    $ ./sbt start
-
-Try hitting the server with your browser:
-
-<http://localhost:9000>
-
-You should see a Rearview page with a message indicating you must login via Google (you must use a
-GMail account which matches the configured domain for openid).
-
-To deploy on Amazon EC2 with an RDS instance, follow the detailed instructions [here](https://github.com/livingsocial/rearview/wiki/Setting-up-Rearview-on-EC2-with-Amazon-RDS).
-
+TODO
 
 Development
 ===========
 
-When doing development the Rearview server can be run in devlopment mode.  In development mode both
-Scala code and client assets are dynamically re-compiled and reloaded.  This includes Scala, Java,
-CoffeeScript, Javascript and LESS code.  To run the server in development mode use:
-
-    ./sbt run
-
-For production mode:
-
-    ./sbt start
-
-Using *start* requires server restarts since all code and templates are cached.
-
+TODO
 
 ## Team
 
@@ -248,6 +214,7 @@ Using *start* requires server restarts since all code and templates are cached.
   <tbody>
     <tr>
       <td>Steve Akers</td><td>Project Manager/Analytics Master</td><td><a href="https://twitter.com/SteveAkers">@SteveAkers</a></td><td><a href="https://github.com/steveakers">https://github.com/steveakers</a></td>
+      <td>Trent Albright</td><td>Architect/Lead developer</td><td><a href="https://twitter.com/trent_albright">@trent_albright</a></td><td><a href="https://github.com/talbright">https://github.com/talbright</a></td>
     </tr>
     <tr>
       <td>Ian Quattlebaum</td><td>Lead Front End developer</td><td><a href="https://twitter.com/ianqueue">@ianqueue</a></td><td><a href="https://github.com/ianqueue">https://github.com/ianqueue</a></td>
