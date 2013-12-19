@@ -1,3 +1,0 @@
-[
-  { "name" : "Outage Monitor", "description" : "Monitor template to detect when an application is no longer sending metrics", "path" : "/monitors/outage.rb", "metrics" : ["foo.bar.baz"]}
-]
