@@ -1,3 +1,5 @@
+This is a port of the ![original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written in Ruby. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
+
 Overview
 ========
 
