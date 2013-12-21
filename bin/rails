@@ -1,4 +1,12 @@
 #!/usr/bin/env ruby
+
+# prevent rearview from starting up jobs or firing alerts unless this is a server start
+if ARGV.size > 0
+  unless ( ARGV.first == "s" || ARGV.first == "server" || ENV['REARVIEW_OPTS'] )
+    ENV['REARVIEW_OPTS'] = "--no-preload --no-alerts"
+  end
+end
+
 APP_PATH = File.expand_path('../../config/application',  __FILE__)
 require_relative '../config/boot'
 require 'rails/commands'
