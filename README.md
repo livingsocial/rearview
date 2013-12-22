@@ -1,5 +1,35 @@
 This is a port of the ![original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written in Ruby. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
 
+Requirements
+============
+
+  - jvm 1.6+
+  - jruby 1.7.5+
+  - ruby manager (rvm or rbenv)
+
+Installation
+============
+
+Clone this repo:
+
+    $ git clone git://github.com/livingsocial/rearview.git
+
+Run the setup script:
+
+    $ bin/setup
+    
+Running
+=======
+
+    $ foreman start
+    
+This will start rearview on port 3000 (http://localhost:3000). Sign-in with the default user 'admin@localhost' and password 'admin'
+
+Deployment
+==========
+
+TODO
+
 Overview
 ========
 
@@ -191,14 +221,6 @@ until the end of the series.
 graph will render 3 lines, with the labels "# of Impressions", "# of Conversions" and "Conversion Rate".
 
 
-Installation & Deployment
-=========================
-
-Clone this repo:
-
-    $ git clone git://github.com/livingsocial/rearview.git
-
-TODO
 
 Development
 ===========
