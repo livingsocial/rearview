@@ -6,6 +6,7 @@ Requirements
   - jvm 1.6+
   - jruby 1.7.5+
   - ruby manager (rvm or rbenv)
+  - graphite
 
 Installation
 ============
@@ -21,7 +22,11 @@ Run the setup script:
 Configuration
 =============
 
-TODO
+Before running rearview you must specify a few settings. The configuration file location is:
+
+    config/initializers/rearview.rb
+
+You must set *config.graphite_url* and *config.sandbox_exec* for rearview to run properly. Most of the other settings you should be able to leave as is.    
 
 Running
 =======
