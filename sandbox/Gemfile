@@ -1,6 +1,4 @@
-source 'http://geminabox.lsqa.net'
 source 'https://rubygems.org'
-source 'http://gems.livingsocial.net'
 
 gem 'json'
 gem 'multi_json', '~> 1.8.1'
