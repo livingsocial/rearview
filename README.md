@@ -33,7 +33,9 @@ Running
 
     $ foreman start
     
-This will start rearview on port 3000 (http://localhost:3000). Sign-in with the default user 'admin@localhost' and password 'admin'
+This will start rearview on port 3000 (http://localhost:3000). 
+
+Sign-in with the default user **admin@localhost** and password **admin**
 
 Deployment
 ==========
