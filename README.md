@@ -3,7 +3,7 @@ This is a port of the ![original](https://github.com/livingsocial/rearview/tree/
 Overview
 ========
 
-Rearview is a Scala monitoring framework for Graphite time series data. The monitors are simple Ruby
+Rearview is a monitoring framework for Graphite time series data. The monitors are simple Ruby
 scripts which are run in a sandbox to prevent I/O. Each monitor is configured with a crontab
 compatible time specification used by the scheduler.
 
