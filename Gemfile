@@ -27,10 +27,11 @@ gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
 
-gem 'rearview', '~> 1.0.0.rc2'
+gem 'rearview', '~> 1.0.0.rc3'
 gem 'omniauth'
 gem 'omniauth-google-oauth2'
 gem 'rspec-rails'
+gem 'foreman'
 
 platforms :jruby do
   gem 'activerecord-jdbcmysql-adapter'

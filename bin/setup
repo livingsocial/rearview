@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+setup_main_bundle() {
+  echo "Installing bundler..."
+  gem install bundler --no-rdoc --no-ri
+  echo "Running 'bundle install'..."
+  bundle install
+}
+
+setup_sandbox_bundle() {
+  echo "Setting up sandbox..."
+  (
+    cd sandbox
+    gem install bundler --no-rdoc --no-ri
+    bundle install
+  )
+}
+
+setup_rails() {
+  echo "Setting up databases..."
+  rake db:setup db:seed
+}
+
+sayonara() {
+  echo <<EOF
+  Setup complete.
+EOF
+}
+
+setup_main_bundle
+setup_sandbox_bundle
+setup_rails
+sayonara
+
