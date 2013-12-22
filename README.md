@@ -18,6 +18,11 @@ Run the setup script:
 
     $ bin/setup
     
+Configuration
+=============
+
+TODO
+
 Running
 =======
 
