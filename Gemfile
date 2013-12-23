@@ -24,7 +24,7 @@ gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
 
-gem 'rearview', '1.0.0.rc4'
+gem 'rearview', '1.0.0.rc5'
 gem 'omniauth'
 gem 'omniauth-google-oauth2'
 gem 'rspec-rails'
