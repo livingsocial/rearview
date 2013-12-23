@@ -8,6 +8,18 @@
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
+	<!-- Place somewhere in the <head> of your document -->
+	<link rel="stylesheet" href="flexslider.css" type="text/css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+	<script src="jquery.flexslider.js"></script>
+	
+	<!-- Place in the <head>, after the three links -->
+	<script type="text/javascript" charset="utf-8">
+	  $(window).load(function() {
+	    $('.flexslider').flexslider();
+	  });
+	</script>
+	
     <title>Rearview</title>
   </head>
 
@@ -33,20 +45,24 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to Rearview.</h3>
+	
+<h3><a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to Rearview.</h3>
 
-<p>Rearview is a real-time monitoring framework for <a href="https://github.com/graphite-project" target="_blank">Graphite</a> time series data. The monitors are simple Ruby scripts which are run in a sandbox to prevent I/O. Each monitor is configured with a crontab compatible time specification used by the scheduler.</p>
-Monitors define the following attributes:<br />
-	<ol>
-		<li>One or more Graphite metric.</li>
-		<li>Crontab time specification.</li>
-		<li>Optional Ruby expression. If no custom graph calls are made a default graph is generated.</li>
-		<li>Optional PagerDuty api keys and/or emails.</li>
-	</ol>
+<p>Rearview is a real-time monitoring framework that sits on top of <a href="https://github.com/graphite-project" target="_blank">Graphite</a>'s time series data. This allows users to create monitors that both visualize and alert on data as it streams from Graphite. The monitors themselves are simple Ruby scripts which run in a sandbox to prevent I/O. Monitors are also configured with a crontab compatible time specification used by the scheduler.</p>
+<section class="slider">
+  <div class="flexslider">
+    <ul class="slides">
+     <li><img src="../images/myapp-code0.png" /></li>
+     <li><img src="../images/myapp-code1.png" /></li>
+     <li><img src="../images/myapp1.png" /></li>
+     <li><img src="../images/myapp2.png" /></li>
+     <li><img src="../images/myapp3.png" /></li>
+   </ul>
+ </div>
+</section>
+<p style="margin-top: -22px;">please visit the the rearview wiki page <a href="https://github.com/livingsocial/rearview/wiki/Monitor-Details" target="_blank">Monitor Details</a> for more information on how monitors work behind the scenes, an explanation of the monitor workflow, and tutorials for creating your own monitors.
 
-<h3>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h3>
+<h3><a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h3>
 
 <p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
 
