@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# check_requirements() {
+# echo "Checking requirements..."
+# }
+
 setup_main_bundle() {
   echo "Installing bundler..."
   gem install bundler --no-rdoc --no-ri
@@ -21,14 +25,20 @@ setup_rails() {
   rake db:setup db:seed
 }
 
+run_install() {
+  bin/rails generate rearview:install
+}
+
 sayonara() {
   echo <<EOF
   Setup complete.
 EOF
 }
 
+# check_requirements
 setup_main_bundle
 setup_sandbox_bundle
 setup_rails
+run_install
 sayonara
 

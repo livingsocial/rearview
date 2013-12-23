@@ -130,7 +130,7 @@ GEM
     rake (10.1.1)
     rdoc (3.12.2)
       json (~> 1.4)
-    rearview (1.0.0.rc3-java)
+    rearview (1.0.0.rc4-java)
       ancestry (~> 2.0.0)
       broach (~> 0.3.0)
       celluloid (~> 0.14.1)
@@ -202,7 +202,7 @@ DEPENDENCIES
   omniauth
   omniauth-google-oauth2
   rails (= 4.0.2)
-  rearview (= 1.0.0.rc3)
+  rearview (= 1.0.0.rc4)
   rspec-rails
   sass-rails (~> 4.0.0)
   sdoc
