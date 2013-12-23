@@ -1,20 +1,20 @@
 development:
   adapter: mysql
-  database: rearview_web_development
+  database: rearview_development
   username: root
   password:
   host: localhost
 
 test:
   adapter: mysql
-  database: rearview_web_test
+  database: rearview_test
   username: root
   password:
   host: localhost
 
 production:
   adapter: mysql
-  database: rearview_web_development
+  database: rearview_production
   username: root
   password:
   host: localhost

@@ -22,7 +22,7 @@ setup_sandbox_bundle() {
 
 setup_rails() {
   echo "Setting up databases..."
-  rake db:setup db:seed
+  bin/rake RAILS_ENV=production db:setup
 }
 
 run_install() {

@@ -29,6 +29,7 @@ gem 'omniauth'
 gem 'omniauth-google-oauth2'
 gem 'rspec-rails'
 gem 'foreman'
+gem 'pry'
 
 platforms :jruby do
   gem 'activerecord-jdbcmysql-adapter'
