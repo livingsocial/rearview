@@ -1,3 +1,6 @@
+Overview
+========
+
 Rearview is a real-time monitoring framework that sits on top of <a href="https://github.com/graphite-project" target="_blank">Graphite</a>'s time series data. This allows users to create monitors that both visualize and alert on data as it streams from Graphite. The monitors themselves are simple Ruby scripts which run in a sandbox to provide additinoal security. Monitors are also configured with a crontab compatible time specification used by the scheduler. Alerts can be sent via email, pagerduty, or campfire.
 
 ![rearview sample monitor](https://github.com/livingsocial/rearview/wiki/sample-monitor.png)
