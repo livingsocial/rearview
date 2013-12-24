@@ -1,5 +1,7 @@
 This is a port of the ![original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written in Ruby. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
 
+<p>Rearview is a real-time monitoring framework that sits on top of <a href="https://github.com/graphite-project" target="_blank">Graphite</a>'s time series data. This allows users to create monitors that both visualize and alert on data as it streams from Graphite. The monitors themselves are simple Ruby scripts which run in a sandbox to provide additinoal security. Monitors are also configured with a crontab compatible time specification used by the scheduler. Alerts can be sent via email, pagerduty, or campfire.</p>
+
 Requirements
 ============
 
