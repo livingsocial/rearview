@@ -5,7 +5,7 @@ Rearview is a real-time monitoring framework that sits on top of <a href="https:
 
 ![rearview sample monitor](https://github.com/livingsocial/rearview/wiki/sample-monitor.png)
 
-This is a port of the ![original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written in Ruby. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
+This is a port of the ![original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written as a Ruby on Rails application. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
 
 Go [here](https://github.com/livingsocial/rearview/wiki/Overview) for a more detailed overview of rearview 
 
@@ -16,15 +16,24 @@ Requirements
   - jruby 1.7.5+
   - ruby manager (rvm or rbenv)
   - graphite
+  - mysql (or other supported [database](https://github.com/jruby/activerecord-jdbc-adapter))
 
 Installation
 ============
 
-Clone this repo:
+### Clone this repo
 
     $ git clone git://github.com/livingsocial/rearview.git
 
-Run the setup script:
+### If not running mysql
+
+Select a supported jdbc driver and add it to the Gemfile and bundle install. See [activerecord-jdbc-adapter](https://github.com/jruby/activerecord-jdbc-adapter) site for more details.
+
+### Edit config/database.yml
+
+Configure per your selected database driver and database connection settings. See [Configuring Rails](http://guides.rubyonrails.org/configuring.html#configuring-active-record) for more details.
+
+### Run the setup script
 
     $ bin/setup
     
