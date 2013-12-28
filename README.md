@@ -29,7 +29,7 @@ Installation
 
 Select a supported jdbc driver and add it to the Gemfile and bundle install. See [activerecord-jdbc-adapter](https://github.com/jruby/activerecord-jdbc-adapter) site for more details.
 
-The default the jdbc/mysql adapter is already included, so this step is not necessary if you are using mysql.
+The installation defaults to the jdbc/mysql adapter, which is already included, so this step is not necessary if you are using mysql.
 
 ### Edit config/database.yml
 
