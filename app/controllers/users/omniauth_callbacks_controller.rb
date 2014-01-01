@@ -2,7 +2,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   skip_before_filter :authenticate_user!
   def google_oauth2
     auth_info = request.env["omniauth.auth"].info
-    user = Rearview::User.find_or_create_by(:email,auth_info['email'])
+    user = Rearview::User.where(email: auth_info['email']).first_or_create
     if user
       flash[:notice] = I18n.t("devise.omniauth_callbacks.success", :kind => "Google")
       session[:user_id] = user.id
