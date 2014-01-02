@@ -5,7 +5,7 @@ Rearview is a real-time monitoring framework that sits on top of <a href="https:
 
 ![rearview sample monitor](https://github.com/livingsocial/rearview/wiki/sample-monitor.png)
 
-This is a port of the ![original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written as a Ruby on Rails application. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
+This is a port of the [original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written as a Ruby on Rails application. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
 
 Go [here](https://github.com/livingsocial/rearview/wiki/Overview) for a more detailed overview of rearview 
 
@@ -60,7 +60,7 @@ Sign-in with the default user **admin@localhost** and password **admin**
 Contributing
 ============
 
-We encourage you to contribute to Rearview. Please check out the ![rearview-engine](http://github.com/livingsocial/rearview-engine) repository for more details.
+We encourage you to contribute to Rearview. Please check out the [rearview-engine](http://github.com/livingsocial/rearview-engine) repository for more details.
 
 
 ## Team
@@ -73,7 +73,7 @@ We encourage you to contribute to Rearview. Please check out the ![rearview-engi
   </thead>
   <tbody>
     <tr>
-      <td>Steve Akers</td><td>Project Manager/Analytics Master</td><td><a href="https://twitter.com/SteveAkers">@SteveAkers</a></td><td><a href="https://github.com/steveakers">https://github.com/steveakers</a></td>
+      <td>Steve Akers</td><td>Product Manager</td><td><a href="https://twitter.com/SteveAkers">@SteveAkers</a></td><td><a href="https://github.com/steveakers">https://github.com/steveakers</a></td>
     </tr>
     <tr>
       <td>Trent Albright</td><td>Architect/Lead developer</td><td><a href="https://twitter.com/trent_albright">@trent_albright</a></td><td><a href="https://github.com/talbright">https://github.com/talbright</a></td>
