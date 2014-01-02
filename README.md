@@ -18,8 +18,8 @@ Requirements
   - graphite
   - mysql (or other supported [database](https://github.com/jruby/activerecord-jdbc-adapter))
 
-Installation
-============
+Getting Started
+===============
 
 ### Clone this repo
 
@@ -56,6 +56,11 @@ Running
 This will start rearview on port 3000 (http://localhost:3000). 
 
 Sign-in with the default user **admin@localhost** and password **admin**
+
+Contributing
+============
+
+We encourage you to contribute to Rearview. Please check out the ![rearview-engine](http://github.com/livingsocial/rearview-engine) repository for more details.
 
 
 ## Team
