@@ -23,7 +23,7 @@ Getting Started
 
 ### Get it
 
-Download the [latest](https://github.com/livingsocial/rearview/archive/v1.0.1.zip)
+[Download](https://github.com/livingsocial/rearview/archive/v1.0.1.zip) the latest release.
 
 ### If not running mysql
 
