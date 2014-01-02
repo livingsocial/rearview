@@ -21,9 +21,9 @@ Requirements
 Getting Started
 ===============
 
-### Clone this repo
+### Get it
 
-    $ git clone git://github.com/livingsocial/rearview.git
+Download the [latest](https://github.com/livingsocial/rearview/archive/v1.0.1.zip)
 
 ### If not running mysql
 
