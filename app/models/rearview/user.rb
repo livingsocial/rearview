@@ -1,4 +1,4 @@
 class Rearview::User < ActiveRecord::Base
   include Rearview::Concerns::Models::User
-  devise :database_authenticatable
+  devise :omniauthable,:database_authenticatable,:omniauth_providers => [:google_oauth2]
 end
