@@ -7,7 +7,7 @@ Rearview is a real-time monitoring framework that sits on top of <a href="https:
 
 This is a port of the [original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written as a Ruby on Rails application. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
 
-Go [here](https://github.com/livingsocial/rearview/wiki/Overview) for a more detailed overview of rearview 
+Go [here](https://github.com/livingsocial/rearview/wiki/Overview) for a more detailed overview of rearview
 
 Requirements
 ============
@@ -23,7 +23,7 @@ Getting Started
 
 ### Get it
 
-[Download](https://github.com/livingsocial/rearview/archive/v1.0.1.zip) the latest release.
+[Download](https://github.com/livingsocial/rearview/archive/v1.0.2.zip) the latest release.
 
 ### If not running mysql
 
@@ -38,7 +38,7 @@ Configure per your selected database driver and database connection settings. Se
 ### Run the setup script
 
     $ bin/setup
-    
+
 Configuration
 =============
 
@@ -46,14 +46,18 @@ Before running rearview you must specify a few settings. The configuration file 
 
     config/initializers/rearview.rb
 
-You must set **config.graphite_url** and **config.sandbox_exec** for rearview to run properly. Most of the other settings you should be able to leave as is.    
+You must set **config.graphite_url** and **config.sandbox_exec** for rearview to run properly. Most of the other settings you should be able to leave as is.
+
+Verify configuration
+
+    $ rake RAILS_ENV=production rearview:config:verify
 
 Running
 =======
 
     $ foreman start
-    
-This will start rearview on port 3000 (http://localhost:3000). 
+
+This will start rearview on port 3000 (http://localhost:3000).
 
 Sign-in with the default user **admin@localhost** and password **admin**
 
