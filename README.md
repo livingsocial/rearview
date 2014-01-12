@@ -1,7 +1,7 @@
 Overview
 ========
 
-Rearview is a real-time monitoring framework that sits on top of <a href="https://github.com/graphite-project" target="_blank">Graphite</a>'s time series data. This allows users to create monitors that both visualize and alert on data as it streams from Graphite. The monitors themselves are simple Ruby scripts which run in a sandbox to provide additinoal security. Monitors are also configured with a crontab compatible time specification used by the scheduler. Alerts can be sent via email, pagerduty, or campfire.
+Rearview is a real-time monitoring framework that sits on top of <a href="https://github.com/graphite-project" target="_blank">Graphite</a>'s time series data. This allows users to create monitors that both visualize and alert on data as it streams from Graphite. The monitors themselves are simple Ruby scripts which run in a sandbox to provide additional security. Monitors are also configured with a crontab compatible time specification used by the scheduler. Alerts can be sent via email, pagerduty, or campfire.
 
 ![rearview sample monitor](https://github.com/livingsocial/rearview/wiki/sample-monitor.png)
 
@@ -38,6 +38,8 @@ Configure per your selected database driver and database connection settings. Se
 ### Run the setup script
 
     $ bin/setup
+
+If the setup script fails due to **java.lang.ClassNotFoundException: javax/crypto/JceSecurity**, please see issue [#17](https://github.com/livingsocial/rearview/issues/17) for a resolution to this problem.
 
 Configuration
 =============
