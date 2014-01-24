@@ -25,7 +25,7 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 1.2'
 
 # gem 'rearview', :path => '~/workspaces/rearview-engine'
-gem 'rearview', '1.1.1'
+gem 'rearview', '1.1.2'
 gem 'omniauth'
 gem 'omniauth-google-oauth2'
 gem 'rspec-rails'

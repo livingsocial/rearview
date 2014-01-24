@@ -141,7 +141,7 @@ GEM
     rake (10.1.1)
     rdoc (3.12.2)
       json (~> 1.4)
-    rearview (1.1.1-java)
+    rearview (1.1.2-java)
       ancestry (~> 2.0.0)
       broach (~> 0.3.0)
       celluloid (~> 0.14.1)
@@ -221,7 +221,7 @@ DEPENDENCIES
   pry
   puma
   rails (= 4.0.2)
-  rearview (= 1.1.1)
+  rearview (= 1.1.2)
   rspec-rails
   sass-rails (~> 4.0.0)
   sdoc
