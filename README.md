@@ -1,3 +1,5 @@
+[![GitHub version](https://badge.fury.io/gh/livingsocial%2Frearview.png)](http://badge.fury.io/gh/livingsocial%2Frearview)
+
 Overview
 ========
 
