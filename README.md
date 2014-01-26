@@ -27,15 +27,16 @@ Getting Started
 
 [Download](https://github.com/livingsocial/rearview/archive/v1.1.2.zip) the latest release.
 
-### If not running mysql
+### Database Support
 
-Select a supported jdbc driver and add it to the Gemfile and bundle install. See [activerecord-jdbc-adapter](https://github.com/jruby/activerecord-jdbc-adapter) site for more details.
-
-The installation defaults to the jdbc/mysql adapter, which is already included, so this step is not necessary if you are using mysql.
+Rearview comes with drivers for both mysql and postgresql. If you wish to use a differenct database select a supported
+jdbc driver and add it to the Gemfile and bundle install. See [activerecord-jdbc-adapter](https://github.com/jruby/activerecord-jdbc-adapter) site for more details.
 
 ### Edit config/database.yml
 
-Configure per your selected database driver and database connection settings. See [Configuring Rails](http://guides.rubyonrails.org/configuring.html#configuring-active-record) for more details.
+Configure per your selected database driver and database connection settings. See [Configuring Rails](http://guides.rubyonrails.org/configuring.html#configuring-active-record) for more details. The installation defaults to common settings for mysql.
+
+Sample configurations for both mysql (config/database.jdbcmysql.yml) and postgresql (config/database.jdbcpostgresql.yml) are available.
 
 ### Run the setup script
 

@@ -18,13 +18,13 @@ class BaseSchema < ActiveRecord::Migration
       t.integer   "job_id",                           :default => 0, :null => false
       t.datetime "created_at"
       t.datetime "updated_at"
-      t.text      "data",       :limit => 2147483647,                :null => false
+      t.text      "data",       :limit => 1073741823,                :null => false
     end
 
     create_table "job_errors", :force => true do |t|
       t.integer   "job_id"
       t.datetime "created_at"
-      t.text      "message",         :limit => 2147483647
+      t.text      "message",         :limit => 1073741823
       t.string    "status"
       t.datetime  "last_alerted_at"
       t.datetime "updated_at"

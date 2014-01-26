@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140107173034) do
+ActiveRecord::Schema.define(version: 20140126035210) do
 
   create_table "applications", force: true do |t|
     t.integer  "user_id"
@@ -27,10 +27,10 @@ ActiveRecord::Schema.define(version: 20140107173034) do
   add_index "applications", ["user_id"], name: "user_id", using: :btree
 
   create_table "job_data", force: true do |t|
-    t.integer  "job_id",                        default: 0, null: false
+    t.integer  "job_id",     default: 0, null: false
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.text     "data",       limit: 2147483647,             null: false
+    t.text     "data",                   null: false
   end
 
   add_index "job_data", ["job_id"], name: "index_job_data_on_job_id", using: :btree
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 20140107173034) do
   create_table "job_errors", force: true do |t|
     t.integer  "job_id"
     t.datetime "created_at"
-    t.text     "message",         limit: 2147483647
+    t.text     "message"
     t.string   "status"
     t.datetime "last_alerted_at"
     t.datetime "updated_at"

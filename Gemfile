@@ -24,8 +24,8 @@ gem 'turbolinks'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
 
-# gem 'rearview', :path => '~/workspaces/rearview-engine'
-gem 'rearview', '1.1.2'
+gem 'rearview', :path => '~/workspaces/rearview-engine'
+# gem 'rearview', '1.1.2'
 gem 'omniauth'
 gem 'omniauth-google-oauth2'
 gem 'rspec-rails'
@@ -35,6 +35,7 @@ gem 'puma'
 
 platforms :jruby do
   gem 'activerecord-jdbcmysql-adapter'
+  gem 'activerecord-jdbcpostgresql-adapter'
   gem 'jruby-openssl', :require => false
 end
 
