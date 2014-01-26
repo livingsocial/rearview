@@ -18,7 +18,7 @@ Requirements
   - jruby 1.7.5+
   - ruby manager (rvm or rbenv)
   - graphite
-  - mysql (or other supported [database](https://github.com/jruby/activerecord-jdbc-adapter))
+  - mysql/postgresql (or other supported [database](https://github.com/jruby/activerecord-jdbc-adapter))
 
 Getting Started
 ===============
