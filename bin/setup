@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
 
-# check_requirements() {
-# echo "Checking requirements..."
-# }
-
 setup_main_bundle() {
-  echo "Installing bundler..."
+  echo "Setting up bundler..."
   gem install bundler --no-rdoc --no-ri
   echo "Running 'bundle install'..."
   bundle install
@@ -20,25 +16,18 @@ setup_sandbox_bundle() {
   )
 }
 
-setup_rails() {
-  echo "Setting up databases..."
-  bin/rake RAILS_ENV=production db:create db:migrate db:seed
-}
-
-run_install() {
-  bin/rails generate rearview:install
+run_setup() {
+  bundle exec rake RAILS_ENV=production rearview:setup
 }
 
 sayonara() {
   echo <<EOF
-  Setup complete.
+  Setup complete
 EOF
 }
 
-# check_requirements
 setup_main_bundle
 setup_sandbox_bundle
-setup_rails
-run_install
+run_setup
 sayonara
 
