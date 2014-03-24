@@ -25,7 +25,7 @@ Getting Started
 
 ### Get it
 
-[Download](https://github.com/livingsocial/rearview/archive/v1.2.0.zip) the latest release.
+[Download](https://github.com/livingsocial/rearview/archive/v1.2.1.zip) the latest release.
 
 ### Database Support
 
