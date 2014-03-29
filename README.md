@@ -7,7 +7,7 @@ Rearview is a real-time monitoring framework that sits on top of <a href="https:
 
 ![rearview sample monitor](https://github.com/livingsocial/rearview/wiki/sample-monitor.png)
 
-This is a port of the [original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) rearview re-written as a Ruby on Rails application. Although the bulk of the code has been running in production for almost a year, it was refactored to work as a rails engine to better suit open sourcing. Currently we consider this release candidate quality, and welcome contributions.
+This is a port of the [original](https://github.com/livingsocial/rearview/tree/scala-1.0.0) scala version re-written in Ruby on Rails. Rearview has been running in production for over a year at LivingSocial.
 
 Go [here](https://github.com/livingsocial/rearview/wiki/Overview) for a more detailed overview of rearview
 
