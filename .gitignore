@@ -15,6 +15,7 @@ tmp
 .settings
 .target
 .idea*
+*.iml
 *.log
 jruby/vendor
 *.csv
