@@ -28,7 +28,7 @@ case class Application(id:         Option[Long],
                        modifiedAt: Option[Date] = None)
 
 /**
- * User object which is dynamically created from a successful openid auth sequence.
+ * User object which is dynamically created from a successful mozilla persona auth sequence.
  * @param id
  * @param email
  * @param firstName

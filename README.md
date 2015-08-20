@@ -217,9 +217,6 @@ Try hitting the server with your browser:
 
 <http://localhost:9000>
 
-You should see a Rearview page with a message indicating you must login via Google (you must use a
-GMail account which matches the configured domain for openid).
-
 To deploy on Amazon EC2 with an RDS instance, follow the detailed instructions [here](https://github.com/livingsocial/rearview/wiki/Setting-up-Rearview-on-EC2-with-Amazon-RDS).
 
 

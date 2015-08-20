@@ -16,15 +16,7 @@ General
      <tbody>
          <tr>
              <td class="resource">GET /</td>
-             <td class="description">Returns the default template, currently index.scala.html.  The user must first be authenticated via OpenID.</td>
-         </tr>
-         <tr>
-             <td class="resource">GET /login</td>
-             <td class="description">If a user is not authenticated, handles redirecting to Google Apps login.  Google Apps login will subsequently redirect back to /loginCallback for verification. The user is redirected to /index if there is a valid session.</td>
-         </tr>
-         <tr>
-             <td class="resource">GET /loginCallback</td>
-             <td class="description">A callback URI used by OpenID once the authentication sequence has completed on the server.</td>
+             <td class="description">Returns the default template, currently index.scala.html.  The user must first be authenticated via mozilla persona.</td>
          </tr>
          <tr>
              <td class="resource">GET /user</td>

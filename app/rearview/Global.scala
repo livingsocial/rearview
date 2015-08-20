@@ -10,7 +10,6 @@ import play.api.Mode
 import play.api.Play
 import play.api.Play.current
 import play.api.db.DB
-import play.api.libs.openid.OpenIDError
 import play.api.mvc.Action
 import play.api.mvc.Flash
 import play.api.mvc.Handler
@@ -86,22 +85,6 @@ object Global extends WithFilters(LoggingFilter) {
   override def onRouteRequest(request: RequestHeader): Option[Handler] = {
     if (request.path.matches("""/health.*""")) Some(Action(Ok))
     else super.onRouteRequest(request)
-  }
-
-
-  /**
-   * Through trial and error I determined the onError method must be overridden to handle OpenID auth errors.  This
-   * may not be the best place for this, but until I find better documentation this works.
-   */
-  override def onError(request: RequestHeader, ex: Throwable) = {
-    ex.getCause() match {
-      case e: OpenIDError =>
-        Logger.warn("Unauthorized OpenID attempt")
-        implicit val flash = Flash(Map("auth-error" -> "We were unable to authenticate you, please try again."))
-        Forbidden(views.html.unauthorized())
-
-      case _ => super.onError(request, ex)
-    }
   }
 
 
