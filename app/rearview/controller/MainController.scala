@@ -67,7 +67,7 @@ object MainController extends Controller with Security {
         .post(
           Map(
             "assertion" -> Seq(assertion),
-            "audience" -> Seq("http://" + host)
+            "audience" -> Seq("https://" + host)
           )
         ).map( response => Json.parse(response.body))
   }
