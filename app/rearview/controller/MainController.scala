@@ -61,7 +61,9 @@ object MainController extends Controller with Security {
 
   def request(host: String, assertion: String):Future[JsValue] = {
     val verifier = "https://verifier.login.persona.org/verify"
-    Logger.info("requesting...")
+    Logger.info("requesting persona verification...")
+    Logger.info("host=" + host)
+    Logger.info("assertion=" + assertion)
     WS.url(verifier)
         .withHeaders("Content-Type" -> "application/x-www-form-urlencoded")
         .post(
@@ -95,6 +97,9 @@ object MainController extends Controller with Security {
   
   def verify(assertion: String) = Action { implicit request =>
     Logger.info("Verifying Persona request:")
+    Logger.info("request=" + request)
+    Logger.info("request.host=" + request.host)
+    Logger.info("request.domain=" + request.domain)
     val f = personaVerify(request.host, assertion).map({
       case (true, email: String) => 
         
