@@ -24,3 +24,5 @@ RUNNING_PID
 .worksheet
 *.sc
 .ensime*
+build.sbt
+out/
