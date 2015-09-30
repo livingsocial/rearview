@@ -15,7 +15,10 @@
 
     <link href="@routes.Assets.at("/public", "less/login.less")" rel='stylesheet/less' type='text/css' />
     <script src="@routes.Assets.at("/public", "vendor/less/js/less.js")" type='text/javascript'></script>
-
+	
+	<link rel="stylesheet" href="../../public/css/persona-buttons.css" />
+	<script src="https://login.persona.org/include.js"></script>
+	
 </head>
 <body class='login rearview'>
   <!--[if lt IE 8]><p class=chromeframe>Your browser is <em>ancient!</em> <a href='http://browsehappy.com/'>Upgrade to a different browser</a> or <a href='http://www.google.com/chromeframe/?redirect=true'>install Google Chrome Frame</a> to experience this site.</p><![endif]-->
@@ -31,7 +34,10 @@
                     </hgroup>
                 </header>
                 <div class='authentication-box'>
-                    <a href='login' class='btn btn-primary'>Sign in with Google apps</a>
+                	<h1></h1>
+                    <button onclick='signin()' class='persona-button'><span>Sign in</span></button><br>
+                    <h2 id="hint"></h2>
+                	<script src='../../public/js/persona.js'></script>
                 </div>
             </section>
         </section>

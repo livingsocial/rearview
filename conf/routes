@@ -2,10 +2,13 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+GET     /verify/:assertion             rearview.controller.MainController.verify(assertion)
+GET     /adduser                       rearview.controller.MainController.adduser
+GET     /adduser/:email/:first/:last   rearview.controller.MainController.addNewUser(email, first, last)
+
 # Auth hooks
-GET     /login                         rearview.controller.MainController.login
-GET     /loginCallback                 rearview.controller.MainController.loginCallback
 GET     /unauthorized                  rearview.controller.MainController.unauthorized
+GET     /unauthorized/logout           rearview.controller.MainController.unauthorized
 
 # General routes
 GET     /                              rearview.controller.MainController.index

@@ -15,6 +15,7 @@ tmp
 .settings
 .target
 .idea*
+*.iml
 *.log
 jruby/vendor
 *.csv
@@ -23,3 +24,5 @@ RUNNING_PID
 .worksheet
 *.sc
 .ensime*
+build.sbt
+out/

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <title>Add User</title>
+        <meta charset='utf-8' />
+        
+        <link rel="stylesheet" href="../../public/css/persona-buttons.css" />
+		<script src="https://login.persona.org/include.js"></script>
+		
+    </head>
+
+    <body bgcolor="#333333">
+        <div align="center">
+        	<font size="5" face="Calibri" color="#ffffaa">Please enter the user information<br>for the new user.</font><br><br>
+	        <font size="4" face="Calibri" color="#ffffff">Email:</font><br>
+	        <input type="text" id="email"><br><br>
+	        <font size="4" face="Calibri" color="#ffffff" style="margin-right:50px">First Name:</font>
+	        <font size="4" face="Calibri" color="#ffffff" style="margin-left:50px">Last Name:</font><br>
+	        <input type="text" id="first">
+	        <input type="text" id="last"><br><br>
+	        <button class="persona-button orange" onclick="cancelAdding()"><span>Cancel</span></button>
+	        <button class="persona-button" onclick="addUser()"><span>Add user</span></button>
+	        <br><br><font size="3" face="Calibri" color="#ff3333" id="hint"></font>
+            <script src='../../public/js/persona.js'></script>
+	    </div>
+    </body>
+</html>
